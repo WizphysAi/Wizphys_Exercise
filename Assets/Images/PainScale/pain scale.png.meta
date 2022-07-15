@@ -1,0 +1,471 @@
+fileFormatVersion: 2
+guid: 4449afc63650d7d4aa31e7649a010edb
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3684903392700411546
+    second: pain scale_0
+  - first:
+      213: 5683209308986012737
+    second: pain scale_1
+  - first:
+      213: 5556454376142557093
+    second: pain scale_2
+  - first:
+      213: 4259924586544259366
+    second: pain scale_3
+  - first:
+      213: -6940586805873362434
+    second: pain scale_4
+  - first:
+      213: -4727982860544323342
+    second: pain scale_5
+  - first:
+      213: 5962985504946645218
+    second: pain scale_6
+  - first:
+      213: 3472500366616447277
+    second: pain scale_7
+  - first:
+      213: -1507030644800864409
+    second: pain scale_8
+  - first:
+      213: -5676518092597578288
+    second: pain scale_9
+  - first:
+      213: -520263107656939331
+    second: pain scale_10
+  - first:
+      213: 22763056986461420
+    second: pain scale_11
+  - first:
+      213: -1578554839221514237
+    second: pain scale_12
+  - first:
+      213: 6990069842201312314
+    second: pain scale_13
+  - first:
+      213: 1574811190736919966
+    second: pain scale_14
+  - first:
+      213: -4494044201901887932
+    second: pain scale_15
+  - first:
+      213: 6430499823321265035
+    second: pain scale_16
+  - first:
+      213: -4857206943442407953
+    second: pain scale_17
+  - first:
+      213: 9130844048464404504
+    second: pain scale_18
+  - first:
+      213: -1375539541009217857
+    second: pain scale_19
+  - first:
+      213: -3868525490023810384
+    second: pain scale_20
+  - first:
+      213: -8287507581569739155
+    second: pain scale_21
+  - first:
+      213: -8873117064969490703
+    second: pain scale_22
+  - first:
+      213: -1665549882090011236
+    second: pain scale_23
+  - first:
+      213: -168591327858144393
+    second: pain scale_24
+  - first:
+      213: -4259569884468641183
+    second: pain scale_25
+  - first:
+      213: -9205323839606553769
+    second: pain scale_26
+  - first:
+      213: 2145118029867698216
+    second: pain scale_27
+  - first:
+      213: -4058039361806122051
+    second: pain scale_28
+  - first:
+      213: -8249871165866728161
+    second: pain scale_29
+  - first:
+      213: -6985327515614153764
+    second: pain scale_30
+  - first:
+      213: -6268163825540393834
+    second: pain scale_31
+  - first:
+      213: -2028969480075923714
+    second: pain scale_32
+  - first:
+      213: -2221076844143497142
+    second: pain scale_33
+  - first:
+      213: -4090576338326580859
+    second: pain scale_34
+  - first:
+      213: -4091496506608880149
+    second: pain scale_35
+  - first:
+      213: -5386519314602096894
+    second: pain scale_36
+  - first:
+      213: -1184004619742274181
+    second: pain scale_37
+  - first:
+      213: -569992766090212888
+    second: pain scale_38
+  - first:
+      213: 1608082125303297851
+    second: pain scale_39
+  - first:
+      213: 4830885845992537115
+    second: pain scale_40
+  - first:
+      213: 1788278518564054274
+    second: pain scale_41
+  - first:
+      213: 96404226816212854
+    second: pain scale_42
+  - first:
+      213: -2639430859145270179
+    second: pain scale_43
+  - first:
+      213: -5099543881552263523
+    second: pain scale_44
+  - first:
+      213: -1872415413197861472
+    second: pain scale_45
+  - first:
+      213: -2468523405736238721
+    second: pain scale_46
+  - first:
+      213: 7792631372454688663
+    second: pain scale_47
+  - first:
+      213: 7148176022545129400
+    second: pain scale_48
+  - first:
+      213: -2256353568286372617
+    second: pain scale_49
+  - first:
+      213: -3034910763955040872
+    second: pain scale_50
+  - first:
+      213: 238076133838899810
+    second: pain scale_51
+  - first:
+      213: 7476104394308151614
+    second: pain scale_52
+  - first:
+      213: 5315037750218297703
+    second: pain scale_53
+  - first:
+      213: 6318525243687243210
+    second: pain scale_54
+  - first:
+      213: 153777935357528923
+    second: pain scale_55
+  - first:
+      213: 926738437437468875
+    second: pain scale_56
+  - first:
+      213: -4799885390179383509
+    second: pain scale_57
+  - first:
+      213: -4037455041795954384
+    second: pain scale_58
+  - first:
+      213: 2229929614616498740
+    second: pain scale_59
+  - first:
+      213: -6008768942094562064
+    second: pain scale_60
+  - first:
+      213: 3210708953745516474
+    second: pain scale_61
+  - first:
+      213: 7837954148022923349
+    second: pain scale_62
+  - first:
+      213: 2541438011489338905
+    second: pain scale_63
+  - first:
+      213: -7182741983947522786
+    second: pain scale_64
+  - first:
+      213: 3659095008809134750
+    second: pain scale_65
+  - first:
+      213: -5616078472725249597
+    second: pain scale_66
+  - first:
+      213: -4000916351655579973
+    second: pain scale_67
+  - first:
+      213: -7869332198297481570
+    second: pain scale_68
+  - first:
+      213: 348787791301426811
+    second: pain scale_69
+  - first:
+      213: -7496506551739970189
+    second: 1
+  - first:
+      213: 4670116092617906247
+    second: 2
+  - first:
+      213: -7816047373738012223
+    second: 3
+  - first:
+      213: 8582536342436142410
+    second: pain scale_73
+  - first:
+      213: 2224205589082407164
+    second: pain scale_74
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: pain scale_12
+      rect:
+        serializedVersion: 2
+        x: 987
+        y: 474
+        width: 191
+        height: 319
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3005abdbcb8d71ae0800000000000000
+      internalID: -1578554839221514237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 1
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 474
+        width: 191
+        height: 319
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37d8627620f07f790800000000000000
+      internalID: -7496506551739970189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 474
+        width: 191
+        height: 319
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7485358c7d59fc040800000000000000
+      internalID: 4670116092617906247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 3
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 474
+        width: 190
+        height: 319
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c198b42352d78390800000000000000
+      internalID: -7816047373738012223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pain scale_73
+      rect:
+        serializedVersion: 2
+        x: 605
+        y: 474
+        width: 192
+        height: 319
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4d59cac45b4b1770800000000000000
+      internalID: 8582536342436142410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pain scale_74
+      rect:
+        serializedVersion: 2
+        x: 797
+        y: 474
+        width: 190
+        height: 319
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf002bce237fdde10800000000000000
+      internalID: 2224205589082407164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: f518889f7f5ccfa4eb1ba400f379af4d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

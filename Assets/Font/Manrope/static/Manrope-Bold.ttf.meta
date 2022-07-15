@@ -1,0 +1,26 @@
+fileFormatVersion: 2
+guid: 4920c7fe99e3bf546ad0e014e059849d
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Manrope
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 1828c20beaab17e4d82b043b0749ca29, type: 3}
+  - {fileID: 12800000, guid: 52b51dc23d3ac264897e901b7627601c, type: 3}
+  - {fileID: 12800000, guid: 80927c04fd0fa1a4192c9e54870dcf39, type: 3}
+  - {fileID: 12800000, guid: 83ebe450c2ed14b4b90b2015fda9ed78, type: 3}
+  - {fileID: 12800000, guid: 75b3cc8706bcbe34ea18146fd6aab2f0, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 0
+    path: Assets/UI_Flow/SplashScreen.unity
+    guid: 919bce1ce517b8341b8629cac2aa65e6
+  - enabled: 0
+    path: Assets/UI_Flow/Final UI/Login.unity
+    guid: 195efd2f347ba7040a74c7fb9555b6e7
+  - enabled: 0
+    path: Assets/UI_Flow/Final UI/FirstTimeUser_ProfileCreate.unity
+    guid: 3903bacd9b0462b4aa735b0a76032f58
+  - enabled: 1
+    path: Assets/UI_Flow/Final UI/Dashboard.unity
+    guid: 864f13ab121d0f24c959040679d1f245
+  - enabled: 1
+    path: Assets/UI_Flow/Final Exercise 4/Bracing.unity
+    guid: b3ed203506bfb6e4b8b93361f03d5948
+  - enabled: 1
+    path: Assets/UI_Flow/Final Exercise 4/SRSE.unity
+    guid: 8fcfd64b3f1f3474d81f5ca406f8987d
+  - enabled: 1
+    path: Assets/UI_Flow/Final Exercise 4/SS.unity
+    guid: 63f1fce661cabc84c8bf456f90a313d7
+  - enabled: 1
+    path: Assets/UI_Flow/Final Exercise 4/Rhomboids.unity
+    guid: 7b8cb1b68d9375347a973d36f9c8450c
+  - enabled: 1
+    path: Assets/UI_Flow/Final Exercise 4/SA.unity
+    guid: d1a32394b1090484fbce0b5346582ccb
+  - enabled: 1
+    path: Assets/UI_Flow/Final Exercise 4/IS.unity
+    guid: c8be0f4531294a944b985152941f2202
+  - enabled: 1
+    path: Assets/UI_Flow/Final Exercise 4/LowRow.unity
+    guid: 50b62f62761c75c4ab805f3ffc45fa65
+  - enabled: 1
+    path: Assets/UI_Flow/Final Exercise 4/PronatedSR.unity
+    guid: c8b301842678b7944b8d974e27718717
+  - enabled: 1
+    path: Assets/UI_Flow/Final Exercise 4/Pronated.unity
+    guid: 248b16a70be60024db06d2b8b0a8d7f3
+  - enabled: 1
+    path: Assets/UI_Flow/Final Exercise 4/Bridge.unity
+    guid: bb91cf68c94591948b027a4cf6d43544
+  - enabled: 1
+    path: Assets/UI_Flow/Final UI/ExerciseComplete.unity
+    guid: 39ba00a7ce8b4dc418231f27af8636d2
+  - enabled: 1
+    path: Assets/UI_Flow/Final UI/Guidance_Bracing.unity
+    guid: 8bf04c71f443c6a4d8a7986c159717c1
+  - enabled: 1
+    path: Assets/UI_Flow/Final UI/Guidance_IS.unity
+    guid: f8f190cac743cb1449e8782407d8d796
+  - enabled: 1
+    path: Assets/UI_Flow/Final UI/Guidance_Pronated.unity
+    guid: e7737681584e90c4fa23fbfe3679e298
+  - enabled: 1
+    path: Assets/UI_Flow/Final UI/Guidance_SS.unity
+    guid: 8ef208ef7e59e2f418cdc8443fd83cc6
+  m_configObjects:
+    UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: cfe06cad8b9fece4cb7d6ddbf34f7e93,
+      type: 2}
+    com.unity.addressableassets: {fileID: 11400000, guid: 84ee5ddd9dc5b3042880e63c5d2e3696,
+      type: 2}
+    com.unity.localization.settings: {fileID: 11400000, guid: 28c797c3c1c7f6a4b8a41c43e8b355b4,
+      type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 4f4e813a803af4c43ad197ceb9eed581,
+      type: 2}

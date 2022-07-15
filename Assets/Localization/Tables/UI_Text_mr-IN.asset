@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_Text_mr-IN
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: mr-IN
+  m_SharedData: {fileID: 11400000, guid: 602dbf72166785d4baa41073c730589b, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 263032115200
+    m_Localized: "\u0915\u0948\u092E\u0947\u0930\u093E \u092D\u093F\u0902\u0924\u0940\u0932\u093E
+      \u091F\u0947\u0915\u0935\u0942\u0928 \u0920\u0947\u0935\u093E \u0905\u0925\u0935\u093E
+      \u0915\u0941\u0920\u0932\u094D\u092F\u093E\u0924\u0930\u0940 \u091F\u0947\u0915\u0942
+      \u0935\u0930 \u090F\u0921\u091C\u0938\u094D\u091F \u0915\u0930\u093E .\u092B\u094B\u0928
+      \u092A\u093E\u0938\u0942\u0928 \u0925\u094B\u0921\u0947 \u0926\u0942\u0930
+      \u0909\u092D\u0947 \u0930\u093E\u0939\u093E .\u0915\u0948\u092E\u0947\u0930\u093E\u094D\u092F\u093E 
+      \u092E\u0927\u0947 \u0924\u0941\u092E\u091A\u0940 \u092A\u0942\u0930\u094D\u0923
+      \u092C\u0949\u0921\u0940 \u0926\u093F\u0938\u0932\u0940 \u092A\u093E\u0939\u093F\u091C\u0947."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 1
