@@ -5,11 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
-/// <summary>
-/// BlazePose form MediaPipe
-/// https://github.com/google/mediapipe
-/// https://viz.mediapipe.dev/demo/pose_tracking
-/// </summary>
+
 [RequireComponent(typeof(WebCamInput))]
 public sealed class BlazePoseBracing : MonoBehaviour
 {
@@ -19,8 +15,6 @@ public sealed class BlazePoseBracing : MonoBehaviour
     private RectTransform containerView = null;
     [SerializeField]
     private RawImage debugView = null;
-    //[SerializeField]
-    //private RawImage segmentationView = null;
     [SerializeField]
     private Canvas canvas = null;
     [SerializeField]
@@ -65,6 +59,7 @@ public sealed class BlazePoseBracing : MonoBehaviour
     [SerializeField] GameObject r_shoulderShrugging;
     [SerializeField] GameObject l_shoulderShrugging;
 
+
     //Check StandStill
     int Frame;
     int StillFrame;
@@ -77,55 +72,63 @@ public sealed class BlazePoseBracing : MonoBehaviour
     float PrevHipRX = 0;
     float PrevKneeLX = 0;
     float PrevKneeRX = 0;
-    float StartingShoulderDist;
-    int CheckBracingCount = 0;
-    bool CheckBracingFlag = false;
-    bool PrevCheckBracingFlag = false;
-    float StartingNeckDist;
-    int CheckNeckDistCount = 0;
-    int CheckNeckRotationCount = 0;
-    float StartinShoulderPosition;
-    int CheckShruggingCount = 0;
-    int BracingCounter = 0;
-    bool ShruggingFlag = false;
-    bool NeckTiltFlag = false;
-    bool NeckRotaionFlag = false;
-    bool[] CheckPriority = new bool[4];
-    int ErrorAudio = 0;
-    int CoolDownCount = 0;
-    float StartingNeckZ;
 
-    [SerializeField] Image greenSignal;
-    [SerializeField] Image redSignal;
-
-    //Check Movement Variables
+    //Check Movement 
     int MoveCount = 0;
     float PrevHipLY = 0;
     float PrevHipRY = 0;
     float PrevKneeLY = 0;
     float PrevKneeRY = 0;
 
-    //counter
-    int ShruggingCounter = 0;
-    int NeckTiltCounter = 0;
-    int NeckRotationCounter = 0;
+    //Check Bracing
+    float StartingShoulderDist;
+    int CheckBracingCount = 0;
+    int BracingCounter = 0;
+    bool CheckBracingFlag = false;
+    bool PrevCheckBracingFlag = false;
 
+    //Check Shrugging
+    float StartinShoulderPosition;
+    int CheckShruggingCount = 0;
+    int ShruggingCounter = 0;
+    bool ShruggingFlag = false;
+
+    //Check NeckTilt
+    float StartingNeckDist;
+    int CheckNeckDistCount = 0;
+    int NeckTiltCounter = 0;
+    bool NeckTiltFlag = false;
+
+    //Check NeckRoatation
+    int CheckNeckRotationCount = 0;
+    int NeckRotationCounter = 0; 
+    bool NeckRotaionFlag = false;
+    
+    // Audio
+    bool[] CheckPriority = new bool[4];
+    int ErrorAudio = 0;
+    int CoolDownCount = 0;
+    float StartingNeckZ;
+    [SerializeField] AudioSource backgroundMusic;
+    [SerializeField] float volumeBG = 0.3f;
+
+    // Still Signal 
+    [SerializeField] Image greenSignal;
+    [SerializeField] Image redSignal;
+
+    // Slider
     public Slider slider;
     float sliderCount = 0;
     float sliderValue = 0;
 
-    [SerializeField] private UniTask<bool> task;
-    [SerializeField] private CancellationToken cancellationToken;
-
-    [SerializeField] AudioSource backgroundMusic;
-    [SerializeField] float volumeBG = 0.3f;
-
+    // Gyrovalues
     [SerializeField] float gyrovalues_new;
     [SerializeField] GameObject gyro;
     private Gyro_Manager  GyroScript;
     [SerializeField] GameObject gyroPanel;
 
-
+    [SerializeField] private UniTask<bool> task;
+    [SerializeField] private CancellationToken cancellationToken;
 
     private void Start()
     {
@@ -200,15 +203,8 @@ public sealed class BlazePoseBracing : MonoBehaviour
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
 
-        //if (SystemInfo.supportsGyroscope)
-        //{
-        //    //Debug.Log("GyroToUnity(Input.gyro.attitude): " + GyroToUnity(Input.gyro.attitude));
-        //    //Debug.Log("GyroToUnity(Input.gyro.attitude)[0]: " + GyroToUnity(Input.gyro.attitude)[0]);
-
-        //}
-
         gyrovalues_new = GyroScript.gyrovalues*10;
-        gyrovalues_new = 2.0f;
+        //gyrovalues_new = 2.0f;
 
         if (3 > gyrovalues_new && gyrovalues_new > 1.8)
         {
@@ -398,19 +394,8 @@ public sealed class BlazePoseBracing : MonoBehaviour
                 {
                     CoolDownCount = CoolDownCount - 1;
                 }
-
             }
-
-
-            // AudioPlay Counter
-            //ShruggingCounter
-            //NeckTiltCounter
-            //NeckRotationCounter
-            //Debug.Log("CoolDownCount:" + CoolDownCount);
-
         }
-
-
     }
 
 
@@ -418,6 +403,7 @@ public sealed class BlazePoseBracing : MonoBehaviour
     {
         return new Quaternion(q.x, q.y, -q.z, -q.w);
     }
+
     private void Invoke(Texture texture)
     {
         landmarkResult = pose.Invoke(texture);
@@ -426,10 +412,6 @@ public sealed class BlazePoseBracing : MonoBehaviour
         {
             debugView.texture = pose.LandmarkInputTexture;
         }
-        //if (landmarkResult != null && landmarkResult.SegmentationTexture != null)
-        //{
-        //    segmentationView.texture = landmarkResult.SegmentationTexture;
-        //}
     }
     private async UniTask<bool> InvokeAsync(Texture texture)
     {
@@ -454,14 +436,9 @@ public sealed class BlazePoseBracing : MonoBehaviour
         float d3y = landmarkResult.viewportLandmarks[23][1];
         float d4y = landmarkResult.viewportLandmarks[24][1];
         float delta = Math.Abs((d1 + d2 + d3 + d4 + d5 + d6) * 100);
-        if (Math.Abs(delta) < 1.5)
-        {
-            StillCount += 1;
-        }
-        else
-        {
-            StillCount = 0;
-        }
+
+        StillCount = (Math.Abs(delta) < 1.5) ? (StillCount + 1) : (StillCount = 0);
+
         if (StillCount > 15)
         {
             StillFlag = true;
@@ -476,6 +453,7 @@ public sealed class BlazePoseBracing : MonoBehaviour
             standStill.text = "Please stand still";
             standStill.gameObject.SetActive(true);
         }
+
         PrevShoulderLX = landmarkResult.viewportLandmarks[11][0];
         PrevShoulderRX = landmarkResult.viewportLandmarks[12][0];
         PrevHipLX = landmarkResult.viewportLandmarks[23][0];
@@ -492,33 +470,25 @@ public sealed class BlazePoseBracing : MonoBehaviour
         float d4y = landmarkResult.viewportLandmarks[26][1] - PrevKneeRY;
         float delta = Math.Abs((d1y + d2y + d3y + d4y) * 100);
 
-
         MoveCount = (Math.Abs(delta) > 2) ? (MoveCount + 1) : (MoveCount = 0);
-        //Debug.Log("move delta: " + delta + "---" + MoveCount);
-        //Debug.Log("MoveCount: " );
         if (MoveCount > 2)
         {
-            //Debug.Log("StillFLag false");
             StillFlag = false;
-            //textElementStandStill.gameObject.SetActive(true);
         }
         else
         {
             StillFlag = true;
-            //textElementStandStill.gameObject.SetActive(false);
         }
         PrevHipLY = landmarkResult.viewportLandmarks[23][1];
         PrevHipRY = landmarkResult.viewportLandmarks[24][1];
         PrevKneeLY = landmarkResult.viewportLandmarks[25][1];
         PrevKneeRY = landmarkResult.viewportLandmarks[26][1];
     }
+
     private float CheckBracing()
     {
         float LeftShoulderX = (landmarkResult.viewportLandmarks[11][0] * 3 + landmarkResult.viewportLandmarks[13][0]) / 4;
         float RightShoulderX = (landmarkResult.viewportLandmarks[12][0] * 3 + landmarkResult.viewportLandmarks[14][0]) / 4;
-
-        //float LeftShoulderX = (landmarkResult.viewportLandmarks[11][0]);
-        //float RightShoulderX = (landmarkResult.viewportLandmarks[12][0]);
 
         float ShoulderDist = RightShoulderX - LeftShoulderX;
         if (Frame < (StillFrame + 3))
@@ -526,10 +496,10 @@ public sealed class BlazePoseBracing : MonoBehaviour
             StartingShoulderDist = ShoulderDist;
         }
         float DeltaShoulderDist = (((StartingShoulderDist - ShoulderDist) / StartingShoulderDist) * 100f);
-        Debug.Log("DeltaShoulderDist"+ DeltaShoulderDist);
+        // Debug.Log("DeltaShoulderDist"+ DeltaShoulderDist);
 
         CheckBracingCount = (DeltaShoulderDist > 2.7f) ? (CheckBracingCount + 1) : (CheckBracingCount = 0);
-        Debug.Log("CheckBracingCount"+ CheckBracingCount);
+        // Debug.Log("CheckBracingCount"+ CheckBracingCount);
         if (CheckBracingCount > 10)
         {
             //Bracing.text = "Bracing";
@@ -576,10 +546,10 @@ public sealed class BlazePoseBracing : MonoBehaviour
         float deltaNeckZ = (StartingNeckZ - landmarkResult.viewportLandmarks[0][2]*100);
         Debug.Log("deltaNeckZ: "+deltaNeckZ);
 
-        //float deltaNeckDist = ((StartingNeckDist - (landmarkResult.viewportLandmarks[0][1] - (landmarkResult.viewportLandmarks[11][1] + landmarkResult.viewportLandmarks[12][1]) / 2)) / NormalizingFactor) * 100;
-        //Debug.Log("deltaNeckDist" + deltaNeckDist);
-        // CheckNeckDistCount = (deltaNeckDist > 2.5) ? (CheckNeckDistCount + 1) : (CheckNeckDistCount = 0);
-        CheckNeckDistCount = (deltaNeckZ > 6.5) ? (CheckNeckDistCount + 1) : (CheckNeckDistCount = 0);
+        float deltaNeckDist = ((StartingNeckDist - (landmarkResult.viewportLandmarks[0][1] - (landmarkResult.viewportLandmarks[11][1] + landmarkResult.viewportLandmarks[12][1]) / 2)) / NormalizingFactor) * 100;
+        Debug.Log("deltaNeckDist" + deltaNeckDist);
+        CheckNeckDistCount = (deltaNeckDist > 2.5) ? (CheckNeckDistCount + 1) : (CheckNeckDistCount = 0);
+        // CheckNeckDistCount = (deltaNeckZ > 6.5) ? (CheckNeckDistCount + 1) : (CheckNeckDistCount = 0);
         Debug.Log("CheckNeckDistCount" + CheckNeckDistCount);
         if (CheckNeckDistCount > 15)
         {
@@ -605,8 +575,6 @@ public sealed class BlazePoseBracing : MonoBehaviour
     }
     private float CheckShrugging()
     {
-        //float LeftShoulderY = landmarkResult.viewportLandmarks[11][1];
-        //float RightShoulderY = landmarkResult.viewportLandmarks[12][1];
         float ShoulderPosition = ((landmarkResult.viewportLandmarks[12][1] + landmarkResult.viewportLandmarks[11][1]) / 2);
         float AnklePosition = ((landmarkResult.viewportLandmarks[25][1] + landmarkResult.viewportLandmarks[26][1]) / 2);
         if (Frame < (StillFrame + 5))
@@ -654,9 +622,9 @@ public sealed class BlazePoseBracing : MonoBehaviour
         }
         if (CheckNeckRotationCount > 20)
         {
-            //NeckTilt.text = "NeckRotation";
+            NeckTilt.text = "NeckRotation";
             NeckRotaionFlag = true;
-            //NeckRotaion.gameObject.SetActive(true);
+            NeckRotaion.gameObject.SetActive(true);
             //NeckRotaionObject.gameObject.SetActive(true);
 
             if(NeckRotaionFlag == true)

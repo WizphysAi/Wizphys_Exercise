@@ -6,11 +6,6 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// BlazePose form MediaPipe
-/// https://github.com/google/mediapipe
-/// https://viz.mediapipe.dev/demo/pose_tracking
-/// </summary>
 [RequireComponent(typeof(WebCamInput))]
 public sealed class BlazePoseBridge : MonoBehaviour
 {
@@ -40,22 +35,13 @@ public sealed class BlazePoseBridge : MonoBehaviour
     [Header("Text")]
     [SerializeField] Text StandStill;
     [SerializeField] Text Exercise;
-    //public Text textElementError1;
-    [SerializeField] Text pb_Left_Right;
-    [SerializeField] Text neck_Up;
-    //public Text textElementError4;
+    [SerializeField] Text Raise_Up;
     [SerializeField] Text Counter;
 
 
     [Header("Audio Souce")]
     [SerializeField]
     AudioClip pronated_Audio;
-    //[SerializeField]
-    //AudioClip neckUp_Audio;
-    //[SerializeField]
-    //AudioClip pbLeft_Audio;
-    //[SerializeField]
-    //AudioClip pbRight_audio;
 
     [SerializeField] AudioClip Counter_Audio;
     public AudioSource CounterAudio;
@@ -74,7 +60,7 @@ public sealed class BlazePoseBridge : MonoBehaviour
     [SerializeField] Image greenSignal;
     [SerializeField] Image redSignal;
 
-    //Check StandStill varibales
+    //Check StillPronated
     int Frame;
     int StillFrame;
     int StillCount;
@@ -84,61 +70,21 @@ public sealed class BlazePoseBridge : MonoBehaviour
     float PrevShoulderRX = 0;
     float PrevHipLX = 0;
     float PrevHipRX = 0;
-    float PrevKneeLX = 0;
-    float PrevKneeRX = 0;
+    float PrevElbowX = 0;
+    bool PronatedRight = false;
 
 
     //Check Movement Variables
     int MoveCount = 0;
     float PrevHipLY = 0;
     float PrevHipRY = 0;
-    float PrevKneeLY = 0;
-    float PrevKneeRY = 0;
 
-    //SS variables
-    float StartingLeftWristY;
-    float StartingRightWristY;
-    float StartingLeftWristX;
-    float StartingRightWristX;
-    public bool CheckSSRightFlag = false;
-    public bool CheckSSLeftFlag = false;
-    int CheckSSRightCount = 0;
-    int CheckSSLeftCount = 0;
-    int CheckSSRightSideCount = 0;
-    int CheckSSLeftSideCount = 0;
-    int CheckSSRightFrontCount = 0;
-    int CheckSSLeftFrontCount = 0;
-    int CheckElbowBendLeftCount = 0;
-    int CheckElbowBendRightCount = 0;
-    int CheckSideBendLeftCount = 0;
-    int CheckTorsoTiltCount = 0;
-    public bool TorsoTiltFlag = false;
-    float StartingLeftShoulderY = 0;
-    float StartingRightShoulderY = 0;
-    int LeftShoulderCount = 0;
-    int RightShoulderCount = 0;
-    float StartingY;
-
-    float StartingSideAngleRight = 0;
-    float StartingSideAngleLeft = 0;
-    int SideAngleRightCount = 0;
-    int SideAngleLeftCount = 0;
-    float PrevElbowX = 0;
-
-    //PSR variables
-    float StartingNeck = 0;
-    int CheckPSRRightCount;
-    int PSRLeftCount;
-    int CheckPBRightCount;
-    int CheckPBLeftCount;
-    int CheckNeckPronatedCount;
-    int PronatedCounter = 0;
-
-    bool prevPronatedLeftFlag = false;
-    bool PronatedLeftFlag = false;
-    bool PBLeftFlag = false;
-
-    bool PronatedRight = false;
+    //Bridge variables
+    int BridgeCounter = 0;
+    int BridgeCount = 0;
+    int RaiseUpCount = 0;
+    bool prevBridgeFlag = false;
+    bool BridgeFlag = false;
 
     public Slider slider;
     float sliderCount = 0;
@@ -152,10 +98,7 @@ public sealed class BlazePoseBridge : MonoBehaviour
     {
         slider.value = 0;
         Exercise.gameObject.SetActive(false);
-        //textElementError1.gameObject.SetActive(false);
-        pb_Left_Right.gameObject.SetActive(false);
-        neck_Up.gameObject.SetActive(false);
-        //textElementError4.gameObject.SetActive(false);
+        Raise_Up.gameObject.SetActive(false);
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
@@ -203,28 +146,14 @@ public sealed class BlazePoseBridge : MonoBehaviour
 
     private void Update()
     {
-        //drawer.DrawPoseResult(poseResult);
         Exercise.gameObject.SetActive(false);
-        //textElementError1.gameObject.SetActive(false);
-        pb_Left_Right.gameObject.SetActive(false);
-        neck_Up.gameObject.SetActive(false);
-        //textElementError4.gameObject.SetActive(false);F
+        Raise_Up.gameObject.SetActive(false);
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
 
-        if (SystemInfo.supportsGyroscope)
-        {
-            //Debug.Log("GyroToUnity(Input.gyro.attitude): " + GyroToUnity(Input.gyro.attitude));
-            //Debug.Log("GyroToUnity(Input.gyro.attitude)[0]: " + GyroToUnity(Input.gyro.attitude)[0]);
-            //Debug.Log("Input.gyro.attitude.eulerAngles: "+ Input.gyro.attitude.eulerAngles);
-        }
-
         if (landmarkResult != null && landmarkResult.score > 0.2f)
         {
-            //drawer.DrawCropMatrix(pose.CropMatrix);
-            //Debug.Log("canvas.planeDistance: " + canvas.planeDistance);  
-
             //float TorsoSlope = (landmarkResult.viewportLandmarks[23][1] - landmarkResult.viewportLandmarks[11][1]) / (landmarkResult.viewportLandmarks[23][0] - landmarkResult.viewportLandmarks[11][0]);
             //Debug.Log("TorsoSlope" + TorsoSlope*10);
 
@@ -238,46 +167,22 @@ public sealed class BlazePoseBridge : MonoBehaviour
                     greenSignal.gameObject.SetActive(true);
                     redSignal.gameObject.SetActive(false);
 
-                    // PSR Right
-                    //CheckPSRRight();
-                    //CheckPBRight();
-
-                    // PSR Left
-                    // CheckPSRLeft();
-                    // CheckPBLeft();
-                    // CheckNeckPronated();
-
                     CheckBridge();
                 }
             }
             else
             {
-                //StandStill.gameObject.SetActive(false);
                 Exercise.gameObject.SetActive(false);
-                //textElementError1.gameObject.SetActive(false);
-                pb_Left_Right.gameObject.SetActive(false);
-                neck_Up.gameObject.SetActive(false);
-                //textElementError4.gameObject.SetActive(false);
+                Raise_Up.gameObject.SetActive(false);
 
                 greenSignal.gameObject.SetActive(false);
                 redSignal.gameObject.SetActive(true);
 
-                //CheckStandStill();
-                //CheckStandStillPronatedRight();
-                // CheckStandStillPronatedLeft();
                 CheckStillPronated();
             }
 
-            //Debug.Log("landmarkResult.viewportLandmarks[11] X: " + landmarkResult.viewportLandmarks[11][0]);
-
             drawer.DrawLandmarkResult(landmarkResult, visibilityThreshold, canvas.planeDistance);
 
-            if (options.landmark.useWorldLandmarks)
-            {
-                drawer.DrawWorldLandmarks(landmarkResult, visibilityThreshold);
-            }
-
-            //Frame += 1;
             Frame = Frame + 1;
         }
         else
@@ -289,13 +194,6 @@ public sealed class BlazePoseBridge : MonoBehaviour
 
         //Main Audio Player
         AudioSource audioSource = GetComponent<AudioSource>();
-
-        // if (StillFlag == true && !audioSource.isPlaying)
-        // {
-        //     //audioSource.loop = true;
-        //     audioSource.clip = pronated_Audio;
-        //     audioSource.Play();
-        // }
 
     }
 
@@ -330,87 +228,6 @@ public sealed class BlazePoseBridge : MonoBehaviour
         return landmarkResult != null;
     }
 
-
-    private void CheckStandStill()
-    {
-
-        //Debug.Log("CheckStandStill called");
-        float d1 = landmarkResult.viewportLandmarks[11][0] - PrevShoulderLX;
-        float d2 = landmarkResult.viewportLandmarks[12][0] - PrevShoulderRX;
-        float d3 = landmarkResult.viewportLandmarks[23][0] - PrevHipLX;
-        float d4 = landmarkResult.viewportLandmarks[24][0] - PrevHipRX;
-        float d5 = landmarkResult.viewportLandmarks[25][0] - PrevKneeLX;
-        float d6 = landmarkResult.viewportLandmarks[26][0] - PrevKneeRX;
-
-        float d1y = landmarkResult.viewportLandmarks[11][1];
-        float d2y = landmarkResult.viewportLandmarks[12][1];
-        float d3y = landmarkResult.viewportLandmarks[23][1];
-        float d4y = landmarkResult.viewportLandmarks[24][1];
-
-        float delta = Math.Abs((d1 + d2 + d3 + d4 + d5 + d6) * 100);
-
-        //Debug.Log("delta: "+ delta);
-
-        StillCount = (Math.Abs(delta) < 1.5) ? (StillCount + 1) : (StillCount = 0);
-
-        if (StillCount > 15)
-        {
-            StillFlag = true;
-            StandStill.text = "Start exercise";
-            StandStill.gameObject.SetActive(true);
-            StillFrame = Frame;
-
-            NormalizingFactor = ((d1y + d2y) / 2) - ((d3y + d4y) / 2);
-            //Debug.Log("NormalizingFactor" + NormalizingFactor);
-            //StillFrame = frame
-        }
-        else
-        {
-            StillFlag = false;
-            StandStill.text = "please stand still";
-            StandStill.gameObject.SetActive(true);
-        }
-
-        PrevShoulderLX = landmarkResult.viewportLandmarks[11][0];
-        PrevShoulderRX = landmarkResult.viewportLandmarks[12][0];
-        PrevHipLX = landmarkResult.viewportLandmarks[23][0];
-        PrevHipRX = landmarkResult.viewportLandmarks[24][0];
-        PrevKneeLX = landmarkResult.viewportLandmarks[25][0];
-        PrevKneeRX = landmarkResult.viewportLandmarks[26][0];
-    }
-
-    private void CheckStandStillPronatedRight()
-    {
-        float d1 = landmarkResult.viewportLandmarks[12][0] - PrevShoulderRX;
-        float d2 = landmarkResult.viewportLandmarks[24][0] - PrevHipRX;
-        //float d1y = landmarkResult.viewportLandmarks[12][1];
-        //float d2y = landmarkResult.viewportLandmarks[24][1];
-
-        float delta = Math.Abs((d1 + d2) * 100);
-        //Debug.Log("delta: "+ delta);
-
-        StillCount = (Math.Abs(delta) < 1.5) ? (StillCount + 1) : (StillCount = 0);
-
-        if (StillCount > 20)
-        {
-            StillFlag = true;
-            StandStill.text = "Start exercise";
-            StandStill.gameObject.SetActive(true);
-            StillFrame = Frame;
-            //NormalizingFactor = ((d1y + d2y) / 2) - ((d3y + d4y) / 2);
-            //Debug.Log("NormalizingFactor" + NormalizingFactor);
-            //StillFrame = frame
-        }
-        else
-        {
-            StillFlag = false;
-            StandStill.text = "please stand still";
-            StandStill.gameObject.SetActive(true);
-        }
-        PrevShoulderRX = landmarkResult.viewportLandmarks[12][0];
-        PrevHipRX = landmarkResult.viewportLandmarks[24][0];
-    }
-
     private void CheckStillPronated()
     {
         if ((landmarkResult.viewportLandmarks[12][0] + landmarkResult.viewportLandmarks[11][0]) / 2 > (landmarkResult.viewportLandmarks[24][0] + landmarkResult.viewportLandmarks[23][0]) / 2)
@@ -429,8 +246,6 @@ public sealed class BlazePoseBridge : MonoBehaviour
             float d1 = landmarkResult.viewportLandmarks[12][0] - PrevShoulderLX;
             float d2 = landmarkResult.viewportLandmarks[24][0] - PrevHipLX;
             float d3 = landmarkResult.viewportLandmarks[14][0] - PrevElbowX;
-            //float d1y = landmarkResult.viewportLandmarks[12][1];
-            //float d2y = landmarkResult.viewportLandmarks[24][1];
 
             float delta = Math.Abs((d1 + d2) * 100);
             Debug.Log("delta" + delta);
@@ -445,9 +260,6 @@ public sealed class BlazePoseBridge : MonoBehaviour
                 StandStill.text = "Start exercise";
                 StandStill.gameObject.SetActive(true);
                 StillFrame = Frame;
-                //NormalizingFactor = ((d1y + d2y) / 2) - ((d3y + d4y) / 2);
-                //Debug.Log("NormalizingFactor" + NormalizingFactor);
-                //StillFrame = frame
             }
             else
             {
@@ -465,8 +277,6 @@ public sealed class BlazePoseBridge : MonoBehaviour
             float d1 = landmarkResult.viewportLandmarks[11][0] - PrevShoulderLX;
             float d2 = landmarkResult.viewportLandmarks[23][0] - PrevHipLX;
             float d3 = landmarkResult.viewportLandmarks[13][0] - PrevElbowX;
-            //float d1y = landmarkResult.viewportLandmarks[12][1];
-            //float d2y = landmarkResult.viewportLandmarks[24][1];
 
             float delta = Math.Abs((d1 + d2) * 100);
             Debug.Log("delta" + delta);
@@ -481,9 +291,6 @@ public sealed class BlazePoseBridge : MonoBehaviour
                 StandStill.text = "Start exercise";
                 StandStill.gameObject.SetActive(true);
                 StillFrame = Frame;
-                //NormalizingFactor = ((d1y + d2y) / 2) - ((d3y + d4y) / 2);
-                //Debug.Log("NormalizingFactor" + NormalizingFactor);
-                //StillFrame = frame
             }
             else
             {
@@ -499,8 +306,6 @@ public sealed class BlazePoseBridge : MonoBehaviour
 
     private float CheckBridge()
     {
-        Debug.Log("landmarkResult.viewportLandmarks[12]" + landmarkResult.viewportLandmarks[12]);
-
         if (PronatedRight == true)
         {
             var A = landmarkResult.viewportLandmarks[12];
@@ -508,11 +313,9 @@ public sealed class BlazePoseBridge : MonoBehaviour
             var C = landmarkResult.viewportLandmarks[26];
 
             float BridgeAngleRight = Vector2.Angle(A - B, C - B);
-            // pb_Left_Right.text = "Right: " + (BridgeAngleRight).ToString("n2");
-            // pb_Left_Right.gameObject.SetActive(true);
             Debug.Log("BridgeAngleRight" + BridgeAngleRight);
-            PSRLeftCount = (BridgeAngleRight > 140) ? (PSRLeftCount + 1) : (PSRLeftCount = 0);
-            CheckNeckPronatedCount = (147 > BridgeAngleRight && BridgeAngleRight > 126) ? (CheckNeckPronatedCount + 1) : (CheckNeckPronatedCount = 0);
+            BridgeCount = (BridgeAngleRight > 140) ? (BridgeCount + 1) : (BridgeCount = 0);
+            RaiseUpCount = (147 > BridgeAngleRight && BridgeAngleRight > 126) ? (RaiseUpCount + 1) : (RaiseUpCount = 0);
         }
         else 
         {
@@ -521,50 +324,46 @@ public sealed class BlazePoseBridge : MonoBehaviour
             var F = landmarkResult.viewportLandmarks[25];
 
             float BridgeAngleLeft = Vector2.Angle(D - E, F - E);
-            // pb_Left_Right.text = "Left: " + (BridgeAngleLeft).ToString("n2");
-            // pb_Left_Right.gameObject.SetActive(true);
             Debug.Log("BridgeAngleLeft" + BridgeAngleLeft);
-            PSRLeftCount = (BridgeAngleLeft > 140) ? (PSRLeftCount + 1) : (PSRLeftCount = 0);
-            CheckNeckPronatedCount = (147 > BridgeAngleLeft && BridgeAngleLeft > 126) ? (CheckNeckPronatedCount + 1) : (CheckNeckPronatedCount = 0);
+            BridgeCount = (BridgeAngleLeft > 140) ? (BridgeCount + 1) : (BridgeCount = 0);
+            RaiseUpCount = (147 > BridgeAngleLeft && BridgeAngleLeft > 126) ? (RaiseUpCount + 1) : (RaiseUpCount = 0);
         }
-
-
-        if (CheckNeckPronatedCount > 20)
+        Debug.Log("RaiseUpCount: "+RaiseUpCount);
+        if (RaiseUpCount > 20)
         {
-            neck_Up.text = "Raise Up";
-            neck_Up.gameObject.SetActive(true);
+            Raise_Up.text = "Raise Up";
+            Raise_Up.gameObject.SetActive(true);
         }
         else
         {
-            neck_Up.gameObject.SetActive(false);
+            Raise_Up.gameObject.SetActive(false);
         }
 
-        if (PSRLeftCount > 10)
+        if (BridgeCount > 10)
         {
-            PronatedLeftFlag = true;
+            BridgeFlag = true;
             Exercise.text = "Bridge";
             Exercise.gameObject.SetActive(true);
             sliderCount = sliderCount+1f;
         }
         else
         {
-            PronatedLeftFlag = false;
+            BridgeFlag = false;
             Exercise.gameObject.SetActive(false);
         }
 
-        if (prevPronatedLeftFlag != PronatedLeftFlag)
+        if (prevBridgeFlag != BridgeFlag)
         {
-            PronatedCounter += 1;
+            BridgeCounter += 1;
             sliderCount = 0;
-            Counter.text = (PronatedCounter / 2).ToString();
-            //Debug.Log("SSCounter" + SSCounter);
+            Counter.text = (BridgeCounter / 2).ToString();
 
-            if (PronatedCounter > 0 && (PronatedCounter % 2 == 0))
+            if (BridgeCounter > 0 && (BridgeCounter % 2 == 0))
             {
                 CounterAudio.Play();
             }
 
-            if (PronatedCounter == 20)
+            if (BridgeCounter == 20)
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
             }
@@ -573,9 +372,9 @@ public sealed class BlazePoseBridge : MonoBehaviour
         sliderValue = (float)(sliderCount/70f);
         slider.value = sliderValue; 
 
-        prevPronatedLeftFlag = PronatedLeftFlag;
+        prevBridgeFlag = BridgeFlag;
 
-        return PronatedCounter;
+        return BridgeCounter;
     }
 
     private void CheckMovementLeft()
@@ -587,9 +386,6 @@ public sealed class BlazePoseBridge : MonoBehaviour
 
         float TorsoSlope = (landmarkResult.viewportLandmarks[23][1] - landmarkResult.viewportLandmarks[11][1]) / (landmarkResult.viewportLandmarks[23][0] - landmarkResult.viewportLandmarks[11][0]);
         Debug.Log("TorsoSlope" + TorsoSlope);
-
-        //Debug.Log("move delta: " + delta);
-        //Debug.Log("MoveCount: " + MoveCount);
 
         MoveCount = (Math.Abs(delta) > 2 && Math.Abs(TorsoSlope * 10) > 1.5) ? (MoveCount + 1) : (MoveCount = 0);
 
@@ -606,32 +402,6 @@ public sealed class BlazePoseBridge : MonoBehaviour
 
         PrevHipLY = landmarkResult.viewportLandmarks[23][1];
         PrevHipRY = landmarkResult.viewportLandmarks[24][1];
-    }
-
-    private float CheckNeckPronated()
-    {
-        if (Frame < (StillFrame + 5))
-        {
-            StartingNeck = landmarkResult.viewportLandmarks[0][1];
-        }
-
-        //float DeltaNeckDist = ((StartingNeck - landmarkResult.viewportLandmarks[0][1]) / (landmarkResult.viewportLandmarks[12][0] - landmarkResult.viewportLandmarks[24][0])) * 100;
-        float DeltaNeckDist = Math.Abs(((StartingNeck - landmarkResult.viewportLandmarks[0][1]) / (landmarkResult.viewportLandmarks[12][0] - landmarkResult.viewportLandmarks[24][0])) * 100);
-        Debug.Log("DeltaNeckDist" + DeltaNeckDist);
-        //Debug.Log("DeltaNeckDist" + DeltaNeckDist);
-
-        CheckNeckPronatedCount = (DeltaNeckDist > 8) ? (CheckNeckPronatedCount + 1) : (CheckNeckPronatedCount = 0);
-
-        if (CheckNeckPronatedCount > 10)
-        {
-            neck_Up.text = "Neck up";
-            neck_Up.gameObject.SetActive(true);
-        }
-        else
-        {
-            neck_Up.gameObject.SetActive(false);
-        }
-        return DeltaNeckDist;
     }
 }
 

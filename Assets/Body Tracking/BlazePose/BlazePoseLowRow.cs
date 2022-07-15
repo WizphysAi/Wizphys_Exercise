@@ -5,11 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
-/// <summary>
-/// BlazePose form MediaPipe
-/// https://github.com/google/mediapipe
-/// https://viz.mediapipe.dev/demo/pose_tracking
-/// </summary>
+
 [RequireComponent(typeof(WebCamInput))]
 public sealed class BlazePoseLowRow : MonoBehaviour
 {
@@ -19,8 +15,6 @@ public sealed class BlazePoseLowRow : MonoBehaviour
     private RectTransform containerView = null;
     [SerializeField]
     private RawImage debugView = null;
-    //[SerializeField]
-    //private RawImage segmentationView = null;
     [SerializeField]
     private Canvas canvas = null;
     [SerializeField]
@@ -53,18 +47,13 @@ public sealed class BlazePoseLowRow : MonoBehaviour
     [SerializeField] AudioClip NeckRotaion_Audio;
     [SerializeField] AudioClip Counter_Audio;
 
+    //private AudioSource source;
     public AudioSource BracingAudio;
     public AudioSource ShruggingAudio;
     public AudioSource NeckTiltAudio;
     public AudioSource NeckRotationAudio;
     public AudioSource CounterAudio;
-    //private AudioSource source;
 
-    [Header("Error Object")]
-    [SerializeField] GameObject necktiltObject;
-    [SerializeField] GameObject NeckRotaionObject;
-    [SerializeField] GameObject r_shoulderShrugging;
-    [SerializeField] GameObject l_shoulderShrugging;
 
     //Check StandStill
     int Frame;
@@ -84,31 +73,31 @@ public sealed class BlazePoseLowRow : MonoBehaviour
     float PrevFootIndexRX = 0;
     float PrevAnkleLX = 0;
     float PrevAnkleRX = 0;
-    float StartingShoulderDist;
+
+    // BracingCount
     int CheckBracingCount = 0;
+    float StartingShoulderDist;
+
+    //LowRow Variable
+    int LowRowAngleCount = 0;
     bool LowRowFlag = false;
     bool PrevLowRowFlag = false;
-    float StartinShoulderPosition;
-    int CheckShruggingCount = 0;
-    int BracingCounter = 0;
+    int LowRowCounter = 0;
+
+    //Audio
     bool ShruggingFlag = false;
     bool NeckTiltFlag = false;
     bool NeckRotaionFlag = false;
     bool[] CheckPriority = new bool[4];
     int ErrorAudio = 0;
     int CoolDownCount = 0;
-    float StartingLowRowAngle = 0;
-    int LowRowAngleCount = 0;
-    float StartingLeftShoulderX = 0;
-    float StartingRightShoulderX = 0;
 
-    float StartingLeftWristX = 0;
-    float StartingRightWristX = 0;
-
+    //Wrist function
     int WrsitUpCount = 0;
     int WrsitDownCount = 0;
-    int BackBendCount = 0;
 
+    //BendBand
+    int BackBendCount = 0;
     float StartingtorsoslopeLeft = 0;
     float StartingtorsoslopeRight = 0;
 
@@ -122,11 +111,12 @@ public sealed class BlazePoseLowRow : MonoBehaviour
     float PrevKneeLY = 0;
     float PrevKneeRY = 0;
 
-    //counter
+    //Counter
     int ShruggingCounter = 0;
     int NeckTiltCounter = 0;
     int NeckRotationCounter = 0;
 
+    //Slider
     public Slider slider;
     float sliderCount = 0;
     float sliderValue = 0;
@@ -155,10 +145,6 @@ public sealed class BlazePoseLowRow : MonoBehaviour
         NeckRotaion.gameObject.SetActive(false);
         Shrugging.gameObject.SetActive(false);
         BackBend.gameObject.SetActive(false);
-        //necktiltObject.gameObject.SetActive(false);
-        // NeckRotaionObject.gameObject.SetActive(false);
-        // r_shoulderShrugging.gameObject.SetActive(false);
-        // l_shoulderShrugging.gameObject.SetActive(false);
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
         gyroPanel.gameObject.SetActive(false);
@@ -226,7 +212,7 @@ public sealed class BlazePoseLowRow : MonoBehaviour
         //}
 
         gyrovalues_new = GyroScript.gyrovalues*10;
-        gyrovalues_new = 2f;
+        //gyrovalues_new = 2f;
 
         if (3 > gyrovalues_new && gyrovalues_new > 1.8)
         {
@@ -267,14 +253,14 @@ public sealed class BlazePoseLowRow : MonoBehaviour
                             
                             if(t1<0 && t2<0){
                                 CheckLowRowRight();
-                                CheckBackBendRight();
+                                // CheckBackBendRight();
                                 if(LowRowFlag == false){
                                     CheckWristRight();
                                 }
                             }
                             else if(t1>0 && t2>0){
                                 CheckLowRowLeft();
-                                CheckBackBendLeft();
+                                // CheckBackBendLeft();
                                 if(LowRowFlag == false){
                                     CheckWristLeft();
                                 }
@@ -387,8 +373,6 @@ public sealed class BlazePoseLowRow : MonoBehaviour
                                 {
                                     ShruggingAudio.Play();
                                     Shrugging.gameObject.SetActive(true);
-                                    //r_shoulderShrugging.gameObject.SetActive(true);
-                                    //l_shoulderShrugging.gameObject.SetActive(true);
                                 }
 
                                 if (ShruggingAudio.isPlaying) //lower master audio sound
@@ -425,7 +409,7 @@ public sealed class BlazePoseLowRow : MonoBehaviour
                                 {
                                     NeckRotationAudio.Play();
                                     NeckRotaion.gameObject.SetActive(true);
-                                    NeckRotaionObject.gameObject.SetActive(true);
+                                    // NeckRotaionObject.gameObject.SetActive(true);
                                 }
                                 if (NeckRotationAudio.isPlaying) //lower master audio sound
                                 {
@@ -466,6 +450,7 @@ public sealed class BlazePoseLowRow : MonoBehaviour
     {
         return new Quaternion(q.x, q.y, -q.z, -q.w);
     }
+
     private void Invoke(Texture texture)
     {
         landmarkResult = pose.Invoke(texture);
@@ -474,10 +459,6 @@ public sealed class BlazePoseLowRow : MonoBehaviour
         {
             debugView.texture = pose.LandmarkInputTexture;
         }
-        //if (landmarkResult != null && landmarkResult.SegmentationTexture != null)
-        //{
-        //    segmentationView.texture = landmarkResult.SegmentationTexture;
-        //}
     }
     private async UniTask<bool> InvokeAsync(Texture texture)
     {
@@ -539,8 +520,7 @@ public sealed class BlazePoseLowRow : MonoBehaviour
         float delta = Math.Abs((d2y + d4y) * 100);
 
         MoveCount = (Math.Abs(delta) > 2) ? (MoveCount + 1) : (MoveCount = 0);
-        //Debug.Log("move delta: " + delta + "---" + MoveCount);
-        //Debug.Log("MoveCount: " );
+
         if (MoveCount > 2)
         {
             //Debug.Log("StillFLag false");
@@ -564,8 +544,7 @@ public sealed class BlazePoseLowRow : MonoBehaviour
 
 
         MoveCount = (Math.Abs(delta) > 2) ? (MoveCount + 1) : (MoveCount = 0);
-        //Debug.Log("move delta: " + delta + "---" + MoveCount);
-        //Debug.Log("MoveCount: " );
+
         if (MoveCount > 2)
         {
             //Debug.Log("StillFLag false");
@@ -630,11 +609,7 @@ public sealed class BlazePoseLowRow : MonoBehaviour
         float delta = Math.Abs((d1 + d2 + d3 + d4 + d5) * 100);
 
         Debug.Log("delta left: "+delta);
-        //Debug.Log("torsoslope: "+torsoslope);
-        // Debug.Log("viewportLandmarks[32][0]: "+landmarkResult.viewportLandmarks[32][0]*100);
-        // Debug.Log("viewportLandmarks[28][0]: "+landmarkResult.viewportLandmarks[28][0]*100);
-        // && torsoslope>1.5f
-        // delta = 2.2f;
+
         if ((Math.Abs(delta) < 2.0) && (landmarkResult.viewportLandmarks[31][0] > landmarkResult.viewportLandmarks[27][0] ))
         {
             StillCount += 1;
@@ -683,10 +658,6 @@ public sealed class BlazePoseLowRow : MonoBehaviour
         float delta = Math.Abs((d1 + d2 + d3 + d4 + d5) * 100);
 
         Debug.Log("delta right: "+delta);
-        //Debug.Log("torsoslope: "+torsoslope);
-        // Debug.Log("viewportLandmarks[32][0]: "+landmarkResult.viewportLandmarks[32][0]*100);
-        // Debug.Log("viewportLandmarks[28][0]: "+landmarkResult.viewportLandmarks[28][0]*100);
-        // delta = 2.2f;
 
         if ((Math.Abs(delta) < 1.5) && (landmarkResult.viewportLandmarks[32][0] < landmarkResult.viewportLandmarks[28][0]))
         {
@@ -749,15 +720,15 @@ public sealed class BlazePoseLowRow : MonoBehaviour
 
         if (PrevLowRowFlag != LowRowFlag)
         {
-            BracingCounter += 1;
+            LowRowCounter += 1;
             sliderCount = 0;
-            Counter.text = (BracingCounter / 2).ToString();
+            Counter.text = (LowRowCounter / 2).ToString();
 
-            if (BracingCounter > 0 && (BracingCounter % 2 == 0)) {
+            if (LowRowCounter > 0 && (LowRowCounter % 2 == 0)) {
                 CounterAudio.Play();
             }
 
-            if (BracingCounter == 20)
+            if (LowRowCounter == 20)
             {
                 loadingAnim.gameObject.SetActive(true);
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
@@ -800,15 +771,15 @@ public sealed class BlazePoseLowRow : MonoBehaviour
 
         if (PrevLowRowFlag != LowRowFlag)
         {
-            BracingCounter += 1;
+            LowRowCounter += 1;
             sliderCount = 0;
-            Counter.text = (BracingCounter / 2).ToString();
+            Counter.text = (LowRowCounter / 2).ToString();
 
-            if (BracingCounter > 0 && (BracingCounter % 2 == 0)) {
+            if (LowRowCounter > 0 && (LowRowCounter % 2 == 0)) {
                 CounterAudio.Play();
             }
 
-            if (BracingCounter == 20)
+            if (LowRowCounter == 20)
             {
                 loadingAnim.gameObject.SetActive(true);
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);

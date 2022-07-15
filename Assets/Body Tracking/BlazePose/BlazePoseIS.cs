@@ -6,11 +6,6 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// BlazePose form MediaPipe
-/// https://github.com/google/mediapipe
-/// https://viz.mediapipe.dev/demo/pose_tracking
-/// </summary>
 [RequireComponent(typeof(WebCamInput))]
 public sealed class BlazePoseIS : MonoBehaviour
 {
@@ -30,7 +25,6 @@ public sealed class BlazePoseIS : MonoBehaviour
     private bool runBackground;
     [SerializeField, Range(0f, 1f)]
     private float visibilityThreshold = 0.5f;
-
 
     private BlazePose pose;
     private PoseDetect.Result poseResult;
@@ -63,9 +57,6 @@ public sealed class BlazePoseIS : MonoBehaviour
 
 
     [Header("Audio Souce")]
-    //[SerializeField] AudioClip StartExercise_audio;
-    //[SerializeField] AudioClip StandStill_audio;
-    //[SerializeField] AudioClip StandInFrame_audio;
     [SerializeField] AudioClip IS_audio;
     [SerializeField] AudioClip sidebend_audio;
     [SerializeField] AudioClip torsotilt_audio;
@@ -74,10 +65,6 @@ public sealed class BlazePoseIS : MonoBehaviour
     [SerializeField] AudioClip wristdown_audio;
     [SerializeField] AudioClip Counter_audio;
 
-
-    //public AudioSource StartExerciseAudio;
-    //public AudioSource StandStillAudio;
-    //public AudioSource StandInFrameAudio;
     public AudioSource ISAudio;
     public AudioSource SideBendAudio;
     public AudioSource TorsoTiltAudio;
@@ -96,15 +83,6 @@ public sealed class BlazePoseIS : MonoBehaviour
     [SerializeField] 
     GameObject l_shoulderShrugging;
 
-    [SerializeField]
-    AudioClip startExercise_ls_Object;
-    [SerializeField]
-    AudioClip TorsoTilt_Object;
-    [SerializeField]
-    AudioClip ElbowBend_Object;
-    [SerializeField]
-    AudioClip SideBend_Object;
-
 
     //Check StandStill varibales
     int Frame;
@@ -118,6 +96,8 @@ public sealed class BlazePoseIS : MonoBehaviour
     float PrevHipRX = 0;
     float PrevKneeLX = 0;
     float PrevKneeRX = 0;
+
+    //Still Signal
     [SerializeField] Image greenSignal;
     [SerializeField] Image redSignal;
 
@@ -161,6 +141,7 @@ public sealed class BlazePoseIS : MonoBehaviour
     float StartingWristLeftY;
     int WristLeftUpCount = 0;
     int WristLeftDownCount = 0;
+
     bool[] CheckPriority = new bool[6];
     int ErrorAudio = 0;
     int CoolDownCount = 0;
@@ -257,7 +238,7 @@ public sealed class BlazePoseIS : MonoBehaviour
         redSignal.gameObject.SetActive(true);
 
         gyrovalues_new = GyroScript.gyrovalues*10;
-        // gyrovalues_new = 2.0f;
+        //gyrovalues_new = 2.0f;
         
         if (3 > gyrovalues_new && gyrovalues_new > 1.8)
         {
@@ -274,23 +255,10 @@ public sealed class BlazePoseIS : MonoBehaviour
 
                     if (StillFlag == true) {
 
-
-                        //Bracing
-                        // CheckBracing();
-                        //CheckShrugging();
-                        //CheckNeck();
-                        //CheckNeckRotation();
-                        //IS
-                        //CheckSideBend();
-                        //CheckTorsoTilt();
                         greenSignal.gameObject.SetActive(true);
                         redSignal.gameObject.SetActive(false);
 
                         // IS Left
-                        //CheckISLeft();
-                        //CheckISElbowLeft();
-
-
                         CheckISElbowLeft();
                         if (ISElbowBendFlag == false)
                         {

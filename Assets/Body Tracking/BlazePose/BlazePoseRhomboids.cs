@@ -5,11 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
-/// <summary>
-/// BlazePose form MediaPipe
-/// https://github.com/google/mediapipe
-/// https://viz.mediapipe.dev/demo/pose_tracking
-/// </summary>
+
 [RequireComponent(typeof(WebCamInput))]
 public sealed class BlazePoseRhomboids : MonoBehaviour
 {
@@ -19,8 +15,6 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
     private RectTransform containerView = null;
     [SerializeField]
     private RawImage debugView = null;
-    //[SerializeField]
-    //private RawImage segmentationView = null;
     [SerializeField]
     private Canvas canvas = null;
     [SerializeField]
@@ -40,13 +34,11 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
     [SerializeField] Text standStill;
     [SerializeField] Text startExercise;
     [SerializeField] Text Bracing;
-    [SerializeField] Text NeckTilt;
-    [SerializeField] Text NeckRotaion;
-    [SerializeField] Text Shrugging;
-    [SerializeField] Text Counter;
-
+    [SerializeField] Text Rhomboids;
+    [SerializeField] Text WrsitPosition;
     [SerializeField] Text WristOffset;
     [SerializeField] Text BackBend;
+    [SerializeField] Text Counter;
 
     [Header("Audio Souce")]
     [SerializeField] AudioClip Bracing_Audio;
@@ -55,18 +47,12 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
     [SerializeField] AudioClip NeckRotaion_Audio;
     [SerializeField] AudioClip Counter_Audio;
 
+    //private AudioSource source;
     public AudioSource BracingAudio;
     public AudioSource ShruggingAudio;
     public AudioSource NeckTiltAudio;
     public AudioSource NeckRotationAudio;
     public AudioSource CounterAudio;
-    //private AudioSource source;
-
-    [Header("Error Object")]
-    [SerializeField] GameObject necktiltObject;
-    [SerializeField] GameObject NeckRotaionObject;
-    [SerializeField] GameObject r_shoulderShrugging;
-    [SerializeField] GameObject l_shoulderShrugging;
 
     //Check StandStill
     int Frame;
@@ -80,25 +66,6 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
     float PrevHipRX = 0;
     float PrevKneeLX = 0;
     float PrevKneeRX = 0;
-    float StartingShoulderDist;
-    int CheckBracingCount = 0;
-    bool CheckBracingFlag = false;
-    bool PrevCheckBracingFlag = false;
-    float StartingNeckDist;
-    int CheckNeckDistCount = 0;
-    int CheckNeckRotationCount = 0;
-    float StartinShoulderPosition;
-    int CheckShruggingCount = 0;
-    int BracingCounter = 0;
-    bool ShruggingFlag = false;
-    bool NeckTiltFlag = false;
-    bool NeckRotaionFlag = false;
-    bool[] CheckPriority = new bool[4];
-    int ErrorAudio = 0;
-    int CoolDownCount = 0;
-
-    [SerializeField] Image greenSignal;
-    [SerializeField] Image redSignal;
 
     //Check Movement Variables
     int MoveCount = 0;
@@ -107,17 +74,40 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
     float PrevKneeLY = 0;
     float PrevKneeRY = 0;
 
-    //counter
+    //Bracing
+    bool CheckBracingFlag = false;
+    float StartingShoulderDist;
+    int CheckBracingCount = 0;
+
+    //Rhomboids
+    bool RhomboidsFlag = false;
+    bool PrevRhomboidsFlag = false;
+    int RhomboidsCounter = 0;
+    int RhomboidsCount = 0;
+
+    //Wrist 
+    int wristUpCount = 0;
+    int wristDownCount = 0;
+
+    //BackBend
+    float StartingTorsoDist = 0;
+
+    //Audio Errors (need to be changed)
+    bool ShruggingFlag = false;
+    bool NeckTiltFlag = false;
+    bool NeckRotaionFlag = false;
+    bool[] CheckPriority = new bool[4];
+    int ErrorAudio = 0;
+    int CoolDownCount = 0;
     int ShruggingCounter = 0;
     int NeckTiltCounter = 0;
     int NeckRotationCounter = 0;
 
-    //Rhomboids
-    int wristUpCount = 0;
-    int wristDownCount = 0;
-    int RhomboidsCount = 0;
-    float StartingTorsoDist = 0;
+    //Signal 
+    [SerializeField] Image greenSignal;
+    [SerializeField] Image redSignal;
 
+    //Slider
     public Slider slider;
     float sliderCount = 0;
     float sliderValue = 0;
@@ -138,18 +128,13 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
     {
         slider.value = 0;
         loadingAnim.gameObject.SetActive(false);
-
+        standStill.gameObject.SetActive(false);
         startExercise.gameObject.SetActive(false);
+        Rhomboids.gameObject.SetActive(false);
         Bracing.gameObject.SetActive(false);
-        NeckTilt.gameObject.SetActive(false);
-        NeckRotaion.gameObject.SetActive(false);
-        Shrugging.gameObject.SetActive(false);
+        WrsitPosition.gameObject.SetActive(false);
         WristOffset.gameObject.SetActive(false);
         BackBend.gameObject.SetActive(false);
-        necktiltObject.gameObject.SetActive(false);
-        NeckRotaionObject.gameObject.SetActive(false);
-        r_shoulderShrugging.gameObject.SetActive(false);
-        l_shoulderShrugging.gameObject.SetActive(false);
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
@@ -200,11 +185,11 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
     }
     private void Update()
     {
+        standStill.gameObject.SetActive(false);
         startExercise.gameObject.SetActive(false);
+        Rhomboids.gameObject.SetActive(false);
         Bracing.gameObject.SetActive(false);
-        NeckTilt.gameObject.SetActive(false);
-        necktiltObject.gameObject.SetActive(false);
-        Shrugging.gameObject.SetActive(false);
+        WrsitPosition.gameObject.SetActive(false);
         WristOffset.gameObject.SetActive(false);
         BackBend.gameObject.SetActive(false);
 
@@ -212,7 +197,7 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
         redSignal.gameObject.SetActive(true);
 
         gyrovalues_new = GyroScript.gyrovalues*10;
-        // gyrovalues_new = 2.0f;
+        //gyrovalues_new = 2.0f;
         if (3 > gyrovalues_new && gyrovalues_new > 1.8)
         {
             gyroPanel.gameObject.SetActive(false);
@@ -241,10 +226,11 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
                         redSignal.gameObject.SetActive(true);
 
                         startExercise.gameObject.SetActive(false);
+                        Rhomboids.gameObject.SetActive(false);
                         Bracing.gameObject.SetActive(false);
-                        NeckTilt.gameObject.SetActive(false);
-                        necktiltObject.gameObject.SetActive(false);
-                        Shrugging.gameObject.SetActive(false);
+                        WrsitPosition.gameObject.SetActive(false);
+                        WristOffset.gameObject.SetActive(false);
+                        BackBend.gameObject.SetActive(false);
                         CheckStandStill();
                     }
                 }
@@ -254,10 +240,11 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
                     redSignal.gameObject.SetActive(true);
 
                     startExercise.gameObject.SetActive(false);
+                    Rhomboids.gameObject.SetActive(false);
                     Bracing.gameObject.SetActive(false);
-                    NeckTilt.gameObject.SetActive(false);
-                    necktiltObject.gameObject.SetActive(false);
-                    Shrugging.gameObject.SetActive(false);
+                    WrsitPosition.gameObject.SetActive(false);
+                    WristOffset.gameObject.SetActive(false);
+                    BackBend.gameObject.SetActive(false);
                     CheckStandStill();
                 }
 
@@ -324,9 +311,6 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
                                 if(ShruggingCounter < 3)  //counter+1
                                 {
                                     ShruggingAudio.Play();
-                                    Shrugging.gameObject.SetActive(true);
-                                    r_shoulderShrugging.gameObject.SetActive(true);
-                                    l_shoulderShrugging.gameObject.SetActive(true);
                                 }
 
                                 if (ShruggingAudio.isPlaying) //lower master audio sound
@@ -344,8 +328,6 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
                                 if (NeckTiltCounter < 3)  //counter+1
                                 {
                                     NeckTiltAudio.Play();
-                                    NeckTilt.gameObject.SetActive(true);
-                                    necktiltObject.gameObject.SetActive(true);
                                 }
                                 if (NeckTiltAudio.isPlaying) //lower master audio sound
                                 {
@@ -360,8 +342,6 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
                                 if (NeckRotationCounter < 3)  //counter+1
                                 {
                                     NeckRotationAudio.Play();
-                                    NeckRotaion.gameObject.SetActive(true);
-                                    NeckRotaionObject.gameObject.SetActive(true);
                                 }
                                 if (NeckRotationAudio.isPlaying) //lower master audio sound
                                 {
@@ -392,16 +372,7 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
                 {
                     CoolDownCount = CoolDownCount - 1;
                 }
-
             }
-
-
-            // AudioPlay Counter
-            //ShruggingCounter
-            //NeckTiltCounter
-            //NeckRotationCounter
-            //Debug.Log("CoolDownCount:" + CoolDownCount);
-
         }
 
 
@@ -530,14 +501,14 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
 
         if (CheckBracingCount > 10)
         {
-            Shrugging.text = "Bracing";
+            Bracing.text = "Bracing";
             CheckBracingFlag = true;
-            Shrugging.gameObject.SetActive(true);
+            Bracing.gameObject.SetActive(true);
         }
         else
         {
             CheckBracingFlag = false;
-            Shrugging.gameObject.SetActive(false);
+            Bracing.gameObject.SetActive(false);
         }
 
         return DeltaShoulderDist;
@@ -566,19 +537,19 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
 
             if (wristUpCount > 15)
             {
-                NeckRotaion.text = "Wrist Up " + WristHipDist.ToString("n2");
-                NeckRotaion.gameObject.SetActive(true);
+                WrsitPosition.text = "Wrist Up " + WristHipDist.ToString("n2");
+                WrsitPosition.gameObject.SetActive(true);
 
             }
             else if (wristDownCount > 15)
             {
-                NeckRotaion.text = "Wrist Down " + WristHipDist.ToString("n2");
-                NeckRotaion.gameObject.SetActive(true);
+                WrsitPosition.text = "Wrist Down " + WristHipDist.ToString("n2");
+                WrsitPosition.gameObject.SetActive(true);
             }
             else
             {
-                NeckRotaion.text = "Normal " + WristHipDist.ToString("n2");
-                NeckRotaion.gameObject.SetActive(false);
+                WrsitPosition.text = "Normal " + WristHipDist.ToString("n2");
+                WrsitPosition.gameObject.SetActive(false);
             }
         }
         //Debug.Log("wristUpCount: " + wristUpCount);
@@ -589,18 +560,12 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
 
     private float CheckWristRhomboids()
     {
-        //float LeftShoulderY = landmarkResult.viewportLandmarks[11][1];
-        //float RightShoulderY = landmarkResult.viewportLandmarks[12][1];
-
-        //Debug.Log("slider.value"+slider.value);
 
         float WristMid = ((landmarkResult.viewportLandmarks[15][1] + landmarkResult.viewportLandmarks[16][1]) / 2);
         float ElbowMid = ((landmarkResult.viewportLandmarks[13][1] + landmarkResult.viewportLandmarks[14][1]) / 2);
         float WristDist = (Math.Abs(landmarkResult.viewportLandmarks[16][0] - landmarkResult.viewportLandmarks[15][0]))*100;
         float WristElbowDist = (((WristMid - ElbowMid)/NormalizingFactor) * 100);
 
-        //wristUpCount = (WristHipDist > 11.0f && WristDist < 45) ? (wristUpCount + 1) : (wristUpCount = 0);
-        //wristDownCount = (WristHipDist < 9.8f && WristDist < 45) ? (wristDownCount + 1) : (wristDownCount = 0);
         float WristHipDist = WristElbowDist;
         Debug.Log("WristHipDist: "+WristHipDist);
         if (WristDist < 45) 
@@ -610,19 +575,19 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
 
             if (wristUpCount > 15)
             {
-                NeckRotaion.text = "Wrist Up ";
-                NeckRotaion.gameObject.SetActive(true);
+                WrsitPosition.text = "Wrist Up ";
+                WrsitPosition.gameObject.SetActive(true);
 
             }
             else if (wristDownCount > 15)
             {
-                NeckRotaion.text = "Wrist Down ";
-                NeckRotaion.gameObject.SetActive(true);
+                WrsitPosition.text = "Wrist Down ";
+                WrsitPosition.gameObject.SetActive(true);
             }
             else
             {
-                NeckRotaion.text = "Normal " + WristHipDist.ToString("n2");
-                NeckRotaion.gameObject.SetActive(false);
+                WrsitPosition.text = "Normal " + WristHipDist.ToString("n2");
+                WrsitPosition.gameObject.SetActive(false);
             }
         }
         //Debug.Log("wristUpCount: " + wristUpCount);
@@ -638,12 +603,6 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
         float HipCenter = ((landmarkResult.viewportLandmarks[24][0] + landmarkResult.viewportLandmarks[23][0]))/2;
 
         float offset = (WristCenter - HipCenter) * 100;
-
-        //Debug.Log("WristCenter: " + WristCenter*100);
-        //Debug.Log("HipCenter: " + HipCenter*100);
-        //Debug.Log("offset: " + offset);
-        //wristUpCount = (WristHipDist > 11.0f) ? (wristUpCount + 1) : (wristUpCount = 0);
-        //wristDownCount = (WristHipDist < 9.8f) ? (wristDownCount + 1) : (wristDownCount = 0);
 
         if (WristDist > 40) {
             if (offset > 4.5)
@@ -675,30 +634,30 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
 
         if (RhomboidsCount > 20)
         {
-            Bracing.text = "Rhomboids";
-            Bracing.gameObject.SetActive(true);
-            CheckBracingFlag = true;
+            Rhomboids.text = "Rhomboids";
+            Rhomboids.gameObject.SetActive(true);
+            RhomboidsFlag = true;
             sliderCount = sliderCount+1f;
         }
         else
         {
-            Bracing.gameObject.SetActive(false);
-            CheckBracingFlag = false;
+            Rhomboids.gameObject.SetActive(false);
+            RhomboidsFlag = false;
         }
 
-        if (PrevCheckBracingFlag != CheckBracingFlag)
+        if (PrevRhomboidsFlag != RhomboidsFlag)
         {
-            BracingCounter += 1;
+            RhomboidsCounter += 1;
             sliderCount = 0;
-            Debug.Log("BracingCounter"+ BracingCounter/2);
-            Counter.text = (BracingCounter / 2).ToString();
+            // Debug.Log("RhomboidsCounter"+ RhomboidsCounter/2);
+            Counter.text = (RhomboidsCounter / 2).ToString();
 
-            if (BracingCounter > 0 && (BracingCounter % 2 == 0))
+            if (RhomboidsCounter > 0 && (RhomboidsCounter % 2 == 0))
             {
                 CounterAudio.Play();
             }
 
-            if (BracingCounter == 20)
+            if (RhomboidsCounter == 20)
             {
                 loadingAnim.gameObject.SetActive(true);
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
@@ -710,7 +669,7 @@ public sealed class BlazePoseRhomboids : MonoBehaviour
         sliderValue = (float)(sliderCount/70f);
         Debug.Log("sliderValue: "+sliderValue);
         slider.value = sliderValue; 
-        PrevCheckBracingFlag = CheckBracingFlag;
+        PrevRhomboidsFlag = RhomboidsFlag;
 
         return WristDist;
     }
