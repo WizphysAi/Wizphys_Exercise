@@ -5,12 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
-/// <summary>
-/// BlazePose form MediaPipe
-/// https://github.com/google/mediapipe
-/// https://viz.mediapipe.dev/demo/pose_tracking
-/// </summary>
 [RequireComponent(typeof(WebCamInput))]
 public sealed class BlazePoseSS : MonoBehaviour
 {
@@ -31,6 +27,32 @@ public sealed class BlazePoseSS : MonoBehaviour
     [SerializeField, Range(0f, 1f)]
     private float visibilityThreshold = 0.5f;
 
+    [SerializeField, FilePopup("*.tflite")]
+    private string palmModelFile = "coco_ssd_mobilenet_quant.tflite";
+    [SerializeField, FilePopup("*.tflite")]
+    private string landmarkModelFile = "coco_ssd_mobilenet_quant.tflite";
+
+    [SerializeField]
+    private RawImage cameraView = null;
+    [SerializeField]
+    private RawImage debugPalmView = null;
+    [SerializeField]
+    //private bool runBackground;
+
+    private PalmDetect palmDetect;
+    private HandLandmarkDetect landmarkDetect;
+    private HandLandmarkDetect landmarkDetect_new;
+
+    // just cache for GetWorldCorners
+    private readonly Vector3[] rtCorners = new Vector3[4];
+    private readonly Vector3[] worldJoints = new Vector3[HandLandmarkDetect.JOINT_COUNT];
+    private PrimitiveDraw draw;
+    private List<PalmDetect.Result> palmResults;
+    private HandLandmarkDetect.Result landmarkResult_hand;
+    private HandLandmarkDetect.Result landmarkResult_new;
+    //private UniTask<bool> task;
+    //private CancellationToken cancellationToken;
+
 
     private BlazePose pose;
     private PoseDetect.Result poseResult;
@@ -50,7 +72,8 @@ public sealed class BlazePoseSS : MonoBehaviour
     Text elbowBend;
     [SerializeField] 
     Text sideBend;
-
+    [SerializeField]
+    Text wristOrientation;
     [SerializeField] 
     Text NoBracing;
     [SerializeField] 
@@ -68,6 +91,7 @@ public sealed class BlazePoseSS : MonoBehaviour
     [SerializeField] AudioClip HandFront_audio;
     [SerializeField] AudioClip HandSide_audio;
     [SerializeField] AudioClip Counter_audio;
+    [SerializeField] AudioClip Wrist_audio;
 
     public AudioSource SSAudio;
     public AudioSource SideBendAudio;
@@ -77,6 +101,7 @@ public sealed class BlazePoseSS : MonoBehaviour
     public AudioSource HandFrontAudio;
     public AudioSource HandSideAudio;
     public AudioSource CounterAudio;
+    // public AudioSource WristAudio;
 
     [Header("Error Object")]
     [SerializeField] 
@@ -93,6 +118,8 @@ public sealed class BlazePoseSS : MonoBehaviour
     AudioClip ElbowBendObject;
     [SerializeField]
     AudioClip sideBendObject;
+    // [SerializeField]
+    // GameObject WristObject;
 
     //Check StandStill varibales
     int Frame;
@@ -141,6 +168,7 @@ public sealed class BlazePoseSS : MonoBehaviour
     int CheckSSLeftFrontCount = 0;
     int SSCounter = 0;
     bool TorsoTiltFlag = false;
+    bool WristFlag = false;
     int CheckTorsoTiltCount = 0;
     float StartingSideAngleRight = 0;
     float StartingSideAngleLeft = 0;
@@ -159,6 +187,8 @@ public sealed class BlazePoseSS : MonoBehaviour
     bool ShruggingFlag = false;
     bool HandFrontFlag = false;
     bool HandSideFlag = false;
+    int FullCanCount = 0;
+    int EmptyCanCount = 0;
     int ErrorAudio = 0;
     bool[] CheckPriority = new bool[7];
 
@@ -185,6 +215,7 @@ public sealed class BlazePoseSS : MonoBehaviour
         TorsoTilt.gameObject.SetActive(false);
         sideBend.gameObject.SetActive(false);
         elbowBend.gameObject.SetActive(false);
+        wristOrientation.gameObject.SetActive(false);
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
@@ -195,6 +226,10 @@ public sealed class BlazePoseSS : MonoBehaviour
         }
 
         pose = new BlazePose(options);
+
+        palmDetect = new PalmDetect(palmModelFile);
+        landmarkDetect = new HandLandmarkDetect(landmarkModelFile);
+        landmarkDetect_new = new HandLandmarkDetect(landmarkModelFile);
 
         drawer = new BlazePoseDrawer(Camera.main, gameObject.layer, containerView);
 
@@ -212,12 +247,23 @@ public sealed class BlazePoseSS : MonoBehaviour
         HandFrontAudio.clip = HandFront_audio;
         HandSideAudio.clip = HandSide_audio;
         CounterAudio.clip = Counter_audio;
+        // WristAudio.clip = Wrist_audio;
 
         gyroPanel.gameObject.SetActive(false);
 
         GyroScript = gyro.GetComponent<Gyro_Manager>();
         // Disable screen dimming
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
+        // palmDetect = new PalmDetect(palmModelFile);
+        // landmarkDetect = new HandLandmarkDetect(landmarkModelFile);
+        // landmarkDetect_new = new HandLandmarkDetect(landmarkModelFile);
+        // Debug.Log($"landmark dimension: {landmarkDetect.Dim}");
+
+        //draw = new PrimitiveDraw();
+
+        // var webCamInput = GetComponent<WebCamInput>();
+        // webCamInput.OnTextureUpdate.AddListener(OnTextureUpdate);
     }
 
     private void OnDestroy()
@@ -225,6 +271,13 @@ public sealed class BlazePoseSS : MonoBehaviour
         GetComponent<WebCamInput>().OnTextureUpdate.RemoveListener(OnTextureUpdate);
         pose?.Dispose();
         drawer?.Dispose();
+
+        //var webCamInput = GetComponent<WebCamInput>();
+        //webCamInput.OnTextureUpdate.RemoveListener(OnTextureUpdate);
+
+        palmDetect?.Dispose();
+        landmarkDetect?.Dispose();
+        landmarkDetect_new?.Dispose();
     }
 
     private void OnTextureUpdate(Texture texture)
@@ -251,15 +304,16 @@ public sealed class BlazePoseSS : MonoBehaviour
         TorsoTilt.gameObject.SetActive(false);
         sideBend.gameObject.SetActive(false);
         elbowBend.gameObject.SetActive(false);
+        // WristObject.gameObject.SetActive(false);
 
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
 
 
-        gyrovalues_new = GyroScript.gyrovalues*10;
-        gyrovalues_new = 2.0f;
-        
+        gyrovalues_new = GyroScript.gyrovalues * 10;
+        //gyrovalues_new = 2.0f;
+
         if (3 > gyrovalues_new && gyrovalues_new > 1.8)
         {
             gyroPanel.gameObject.SetActive(false);
@@ -268,10 +322,9 @@ public sealed class BlazePoseSS : MonoBehaviour
             {
                 //drawer.DrawCropMatrix(pose.CropMatrix);
                 //Debug.Log("canvas.planeDistance: " + canvas.planeDistance);  
-
+                //Debug.Log("StillFalg: "+StillFlag);
                 if (StillFlag == true)
                 {
-
                     CheckMovement();
 
                     if (StillFlag == true)
@@ -287,10 +340,30 @@ public sealed class BlazePoseSS : MonoBehaviour
                         // SS Left
                         CheckBracingSS();
                         CheckSSLeft();
+                        
                         if (SSLeftFlag == true)
                         {
+                            CheckWristOrientation();
                             CheckElbowBendLeft();
                         }
+                        else{
+                            wristOrientation.gameObject.SetActive(false);
+                        }
+                     
+                        //Debug.Log("palmResults.Count: "+palmResults.Count);
+                        // if (palmResults != null && palmResults.Count > 0)
+                        // {
+                        //     // DrawFrames(palmResults);
+                        // }
+                        // //Debug.Log("landmarkResult_hand: "+landmarkResult_hand.score);
+                        // if (landmarkResult_hand != null && landmarkResult_hand.score > 0.2f)
+                        // {
+                        //     //DrawCropMatrix(landmarkDetect.CropMatrix);
+                        //     //print("First hand keypoints");
+                        //     //Debug.Log("worldJoints[4][0]: "+worldJoints[4][0]);
+                        //     // List<float> coord = DrawJoints(landmarkResult_hand.joints);
+                        //     // Debug.Log("coord[0]"+coord[0]);
+                        // }
 
                         CheckTorsoTilt();
                         if (TorsoTiltFlag == false)
@@ -302,7 +375,6 @@ public sealed class BlazePoseSS : MonoBehaviour
                             CheckShruggingSS();
                         }
 
-
                         // SS Right
                         //CheckSSRight();
                         //if (CheckSSRightFlag == true)
@@ -313,8 +385,6 @@ public sealed class BlazePoseSS : MonoBehaviour
                         //CheckSideBend();
                         //CheckTorsoTilt();
                     }
-
-
                 }
                 else
                 {
@@ -326,7 +396,8 @@ public sealed class BlazePoseSS : MonoBehaviour
                     TorsoTilt.gameObject.SetActive(false);
                     sideBend.gameObject.SetActive(false);
                     elbowBend.gameObject.SetActive(false);
-
+                    wristOrientation.gameObject.SetActive(false);
+                    // WristObject.gameObject.SetActive(false);
                     CheckStandStill();
                 }
 
@@ -345,7 +416,8 @@ public sealed class BlazePoseSS : MonoBehaviour
                 Frame = Frame + 1;
 
             }
-            else {
+            else
+            {
                 StillFlag = false;
                 greenSignal.gameObject.SetActive(false);
                 redSignal.gameObject.SetActive(true);
@@ -353,12 +425,11 @@ public sealed class BlazePoseSS : MonoBehaviour
         }
         else
         {
-            gyroPanel.gameObject.SetActive(true);
+            //gyroPanel.gameObject.SetActive(true);
             StillFlag = false;
             greenSignal.gameObject.SetActive(false);
             redSignal.gameObject.SetActive(true);
         }
-
 
         if (StillFlag == true && !SSAudio.isPlaying)
         {
@@ -367,21 +438,22 @@ public sealed class BlazePoseSS : MonoBehaviour
 
         if (StillFlag == true)
         {
-        
-            if ((TorsoTiltFlag || SideBendFlag || ShruggingFlag || ElbowBendFlag || HandFrontFlag || HandSideFlag))
+
+            if ((TorsoTiltFlag || SideBendFlag || ShruggingFlag || ElbowBendFlag || HandFrontFlag || HandSideFlag || WristFlag))
             {
                 if (CoolDownCount == 0)
                 {
 
                     SSAudio.mute = true;
 
-                    CheckPriority[0] = TorsoTiltFlag;
-                    CheckPriority[1] = SideBendFlag;
-                    CheckPriority[2] = ShruggingFlag;
-                    CheckPriority[3] = ElbowBendFlag;
-                    CheckPriority[4] = HandFrontFlag;
-                    CheckPriority[5] = HandSideFlag;
-                    CheckPriority[6] = true;
+                    CheckPriority[0] = WristFlag;
+                    CheckPriority[1] = TorsoTiltFlag;
+                    CheckPriority[2] = SideBendFlag;
+                    CheckPriority[3] = ShruggingFlag;
+                    CheckPriority[4] = ElbowBendFlag;
+                    CheckPriority[5] = HandFrontFlag;
+                    CheckPriority[6] = HandSideFlag;
+                    CheckPriority[7] = true;
 
                     for (int i = 0; i < CheckPriority.Length; i++)
                     {
@@ -398,36 +470,41 @@ public sealed class BlazePoseSS : MonoBehaviour
                         switch (ErrorAudio + 1)
                         {
                             case 1:
+                                Debug.Log("Wrist Alighment wrong called");
+                                // WristAudio.Play();
+                                CoolDownCount = CoolDownCount + 30;
+                                break;
+                            case 2:
                                 Debug.Log("Torso Tilt called");
                                 TorsoTiltAudio.Play();
                                 CoolDownCount = CoolDownCount + 30;
                                 break;
-                            case 2:
+                            case 3:
                                 Debug.Log("Side Bend called");
                                 SideBendAudio.Play();
                                 CoolDownCount = CoolDownCount + 30;
                                 break;
-                            case 3:
+                            case 4:
                                 Debug.Log("Shrugging called");
                                 ShruggingAudio.Play();
                                 CoolDownCount = CoolDownCount + 30;
                                 break;
-                            case 4:
+                            case 5:
                                 Debug.Log("Elbow Bend called");
                                 ElbowBendAudio.Play();
                                 CoolDownCount = CoolDownCount + 30;
                                 break;
-                            case 5:
+                            case 6:
                                 Debug.Log("Hand Front called");
                                 HandFrontAudio.Play();
                                 CoolDownCount = CoolDownCount + 30;
                                 break;
-                            case 6:
+                            case 7:
                                 Debug.Log("Hand Side called");
                                 HandSideAudio.Play();
                                 CoolDownCount = CoolDownCount + 30;
                                 break;
-                            case 7:
+                            case 8:
                                 Debug.Log("NO error called");
                                 break;
                         }
@@ -447,14 +524,10 @@ public sealed class BlazePoseSS : MonoBehaviour
                 {
                     CoolDownCount = CoolDownCount - 1;
                 }
-
             }
-
-            //Debug.Log("CoolDownCount:" + CoolDownCount);
-
         }
-
     }
+
 
     private Quaternion GyroToUnity(Quaternion q)
     {
@@ -464,24 +537,65 @@ public sealed class BlazePoseSS : MonoBehaviour
     private void Invoke(Texture texture)
     {
         landmarkResult = pose.Invoke(texture);
-        poseResult = pose.PoseResult;
-        if (pose.LandmarkInputTexture != null)
-        {
-            debugView.texture = pose.LandmarkInputTexture;
-        }
-        if (landmarkResult != null && landmarkResult.SegmentationTexture != null)
-        {
-            segmentationView.texture = landmarkResult.SegmentationTexture;
+        //poseResult = pose.PoseResult;
+
+        // if (pose.LandmarkInputTexture != null)
+        // {
+        //     //debugView.texture = pose.LandmarkInputTexture;
+        // }
+        // if (landmarkResult != null && landmarkResult.SegmentationTexture != null)
+        // {
+        //     segmentationView.texture = landmarkResult.SegmentationTexture;
+        // }
+
+        if(SSLeftFlag == true && Frame%5 == 0){
+            Debug.Log("Hand_Model_called: ");
+            palmDetect.Invoke(texture);
+            // cameraView.material = palmDetect.transformMat;
+            // cameraView.rectTransform.GetWorldCorners(rtCorners);
+
+            palmResults = palmDetect.GetResults(0.7f, 0.3f);
+
+
+            if (palmResults.Count <= 0) return;
+
+            // Detect only first palm
+            landmarkDetect.Invoke(texture, palmResults[0]);
+            //debugView.texture = landmarkDetect.inputTex;
+            //debugPalmView.texture = landmarkDetect.inputTex;
+            landmarkResult_hand = landmarkDetect.GetResult();
+
+            if (palmResults.Count > 1)
+            {
+                landmarkDetect_new.Invoke(texture, palmResults[1]);
+                //debugPalmView.texture = landmarkDetect_new.inputTex;
+                landmarkResult_new = landmarkDetect_new.GetResult();
+            }
         }
     }
 
     private async UniTask<bool> InvokeAsync(Texture texture)
     {
         landmarkResult = await pose.InvokeAsync(texture, cancellationToken);
-        poseResult = pose.PoseResult;
+        //poseResult = pose.PoseResult;
         if (pose.LandmarkInputTexture != null)
         {
             debugView.texture = pose.LandmarkInputTexture;
+        }
+        
+        palmResults = await palmDetect.InvokeAsync(texture, cancellationToken);
+        cameraView.material = palmDetect.transformMat;
+        cameraView.rectTransform.GetWorldCorners(rtCorners);
+
+        if (palmResults.Count <= 0) return false;
+
+        landmarkResult_hand = await landmarkDetect.InvokeAsync(texture, palmResults[0], cancellationToken);
+        debugPalmView.texture = landmarkDetect.inputTex;
+
+        if (palmResults.Count > 1)
+        {
+            landmarkResult_new = await landmarkDetect_new.InvokeAsync(texture, palmResults[1], cancellationToken);
+            debugPalmView.texture = landmarkDetect_new.inputTex;
         }
         return landmarkResult != null;
     }
@@ -505,8 +619,6 @@ public sealed class BlazePoseSS : MonoBehaviour
 
         float delta = Math.Abs((d1 + d2 + d3 + d4 + d5 + d6) * 100);
 
-        //Debug.Log("delta: "+ delta);
-
         if (Math.Abs(delta) < 1.5)
         {
             StillCount += 1;
@@ -515,6 +627,8 @@ public sealed class BlazePoseSS : MonoBehaviour
         {
             StillCount = 0;
         }
+
+        //Debug.Log("StillCount: "+ StillCount);
 
         if (StillCount > 15)
         {
@@ -533,6 +647,8 @@ public sealed class BlazePoseSS : MonoBehaviour
             StandStill.text = "please stand still";
             StandStill.gameObject.SetActive(true);
         }
+
+        Debug.Log("StillFlag: "+StillFlag);
 
         PrevShoulderLX = landmarkResult.viewportLandmarks[11][0];
         PrevShoulderRX = landmarkResult.viewportLandmarks[12][0];
@@ -824,6 +940,68 @@ public sealed class BlazePoseSS : MonoBehaviour
         return angle;
     }
 
+    private void CheckWristOrientation(){
+
+        if(palmResults != null && palmResults.Count > 0)
+        {
+            if (palmResults.Count > 1)
+            {
+                Debug.Log("Two Hands detected");
+                //Debug.Log("SecondHand [4][0]: "+landmarkResult_new.joints[4][0]);
+                
+                if(landmarkResult_hand.joints[4][0] < landmarkResult_new.joints[4][0])
+                {
+                    // Debug.Log("landmarkResult_hand.joints[5][1]: "+landmarkResult_hand.joints[5][1]);
+                    // Debug.Log("landmarkResult_hand.joints[17][1]: "+landmarkResult_hand.joints[17][1]);
+                    // Debug.Log("old Hand is left");
+                    if(landmarkResult_hand.joints[5][1] > landmarkResult_hand.joints[17][1])
+                    {
+                        Debug.Log("Thumb Up");
+                        FullCanCount = FullCanCount + 1;
+                        wristOrientation.text = "Thumb Up";
+                        wristOrientation.gameObject.SetActive(true);
+                    }
+                    else{
+                        Debug.Log("Thumb Down");
+                        EmptyCanCount = EmptyCanCount + 1;
+                        wristOrientation.text = "Thumb Down";
+                        wristOrientation.gameObject.SetActive(true);
+                    }
+                }
+                else
+                {
+                    // Debug.Log("landmarkResult_new.joints[5][1]: "+landmarkResult_new.joints[5][1]);
+                    // Debug.Log("landmarkResult_new.joints[17][1]: "+landmarkResult_new.joints[17][1]); 
+                    // Debug.Log("new Hand is left");
+                    if(landmarkResult_new.joints[5][1] > landmarkResult_new.joints[17][1]){
+                        Debug.Log("Thumb Up");
+                        wristOrientation.text = "Thumb Up";
+                        wristOrientation.gameObject.SetActive(true);
+                    }
+                    else{
+                        Debug.Log("Thumb Down");
+                        wristOrientation.text = "Thumb Down";
+                        wristOrientation.gameObject.SetActive(true);
+                    }
+                }
+            }
+            else
+            {
+                if(landmarkResult_hand.joints[5][1] > landmarkResult_hand.joints[17][1])
+                {
+                    Debug.Log("Thumb Up");
+                    wristOrientation.text = "Thumb Up";
+                    wristOrientation.gameObject.SetActive(true);
+                }
+                else{
+                    Debug.Log("Thumb Down");
+                    wristOrientation.text = "Thumb Down";
+                    wristOrientation.gameObject.SetActive(true);
+                }
+            }
+        }
+    }
+
     private float CheckElbowBendLeft()
     {
         var A = landmarkResult.viewportLandmarks[11];
@@ -937,6 +1115,167 @@ public sealed class BlazePoseSS : MonoBehaviour
         }
 
         return 1;
+    }
+
+    private void DrawFrames(List<PalmDetect.Result> palms)
+    {
+        Vector3 min = rtCorners[0];
+        Vector3 max = rtCorners[2];
+
+        draw.color = Color.green;
+        foreach (var palm in palms)
+        {
+            draw.Rect(MathTF.Lerp(min, max, palm.rect, true), 0.02f, min.z);
+
+            foreach (var kp in palm.keypoints)
+            {
+                draw.Point(MathTF.Lerp(min, max, (Vector3)kp, true), 0.05f);
+            }
+        }
+        draw.Apply();
+    }
+
+    void DrawCropMatrix(in Matrix4x4 matrix)
+    {
+        draw.color = Color.red;
+
+        Vector3 min = rtCorners[0];
+        Vector3 max = rtCorners[2];
+
+        var mtx = matrix.inverse;
+        Vector3 a = MathTF.LerpUnclamped(min, max, mtx.MultiplyPoint3x4(new Vector3(0, 0, 0)));
+        Vector3 b = MathTF.LerpUnclamped(min, max, mtx.MultiplyPoint3x4(new Vector3(1, 0, 0)));
+        Vector3 c = MathTF.LerpUnclamped(min, max, mtx.MultiplyPoint3x4(new Vector3(1, 1, 0)));
+        Vector3 d = MathTF.LerpUnclamped(min, max, mtx.MultiplyPoint3x4(new Vector3(0, 1, 0)));
+
+        draw.Quad(a, b, c, d, 0.02f);
+        draw.Apply();
+    }
+
+    private List<float> DrawJoints(Vector3[] joints)
+    {
+        //draw.color = Color.blue;
+
+        // Get World Corners
+        Debug.Log("min: "+rtCorners[0]);
+        Vector3 min = rtCorners[0];
+        Vector3 max = rtCorners[2];
+
+        Matrix4x4 mtx = Matrix4x4.identity;
+
+        // Get joint locations in the world space
+        float zScale = max.x - min.x;
+        Debug.Log("zScale: "+zScale);
+        for (int i = 0; i < HandLandmarkDetect.JOINT_COUNT; i++)
+        {
+            Vector3 p0 = mtx.MultiplyPoint3x4(joints[i]);
+            Vector3 p1 = MathTF.Lerp(min, max, p0);
+            p1.z += (p0.z - 0.5f) * zScale;
+            worldJoints[i] = p1;
+        }
+
+        // Cube
+        //Debug.Log("worldJoints[5] " + worldJoints[5]);
+        //Debug.Log("worldJoints[4] " + worldJoints[4]);
+        //Debug.Log("worldJoints[17] " + worldJoints[17]);
+
+        // for (int i = 0; i < HandLandmarkDetect.JOINT_COUNT; i++)
+        // {
+        //     if (i == 5 || i == 4 || i == 17)
+        //     {
+        //         draw.Cube(worldJoints[i], 0.1f);
+        //     }
+        // }
+
+        // // Connection Lines
+        // var connections = HandLandmarkDetect.CONNECTIONS;
+        // for (int i = 0; i < connections.Length; i += 2)
+        // {
+        //     if (i == 5 || i == 4 || i == 17)
+        //     {
+        //         draw.Line3D(
+        //             worldJoints[connections[i]],
+        //             worldJoints[connections[i + 1]],
+        //             0.05f);
+        //     }
+        // }
+        // draw.Apply();
+
+        List<float> coords = new List<float>();
+        coords.Add(worldJoints[4][0]);
+        coords.Add(worldJoints[4][1]);
+        coords.Add(worldJoints[4][2]);
+        coords.Add(worldJoints[5][0]);
+        coords.Add(worldJoints[5][1]);
+        coords.Add(worldJoints[5][2]);
+        coords.Add(worldJoints[17][0]);
+        coords.Add(worldJoints[17][1]);
+        coords.Add(worldJoints[17][2]);
+        return (coords);
+    }
+
+    private void orientation(List<float> coordinates)
+    {
+        if (coordinates[7] > coordinates[4])
+        {
+            if (coordinates[4] > coordinates[1])
+            {
+                Debug.Log("Orientation correct");
+                WristFlag = false;
+                //WristObject.gameObject.SetActive(false);
+
+            }
+            else
+            {
+                Debug.Log("Point thumb down");
+                WristFlag = true;
+                //wristAlignment.text = "Wrist alignment wrong";
+                //WristObject.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            Debug.Log("Wrist orientation incorrect, point your thumb down");
+            WristFlag = true;
+            //wristAlignment.text = "Wrist alignment wrong";
+            //WristObject.gameObject.SetActive(true);
+        }
+    }
+
+    private void Right_hand_tracking(List<float> coord, List<float> coord_new)
+    {
+        print("Right hand detected");
+        if (coord[0] > coord_new[0])
+        {
+            orientation(coord);
+            print(coord);
+        }
+        else
+        {
+            orientation(coord_new);
+            print(coord_new);
+        }
+    }
+
+    private void Left_hand_tracking(List<float> coord, List<float> coord_new)
+    {
+        print("Left hand detected");
+        if (coord[0] < coord_new[0])
+        {
+            orientation(coord);
+            print(coord);
+        }
+        else
+        {
+            orientation(coord_new);
+            print(coord_new);
+        }
+    }
+
+    private void hand_tracking(List<float> coord)
+    {
+        print("Left hand detected");
+        orientation(coord);
     }
 
 }

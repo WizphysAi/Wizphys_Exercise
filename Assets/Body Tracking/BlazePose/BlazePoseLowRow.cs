@@ -34,9 +34,8 @@ public sealed class BlazePoseLowRow : MonoBehaviour
     [SerializeField] Text standStill;
     [SerializeField] Text startExercise;
     [SerializeField] Text Bracing;
-    [SerializeField] Text NeckTilt;
-    [SerializeField] Text NeckRotaion;
-    [SerializeField] Text Shrugging;
+    [SerializeField] Text LowRow;
+    [SerializeField] Text Wrist;
     [SerializeField] Text BackBend;
     [SerializeField] Text Counter;
 
@@ -137,14 +136,16 @@ public sealed class BlazePoseLowRow : MonoBehaviour
 
     private void Start()
     {
+
         slider.value = 0;
         loadingAnim.gameObject.SetActive(false);
         startExercise.gameObject.SetActive(false);
+
         Bracing.gameObject.SetActive(false);
-        NeckTilt.gameObject.SetActive(false);
-        NeckRotaion.gameObject.SetActive(false);
-        Shrugging.gameObject.SetActive(false);
+        LowRow.gameObject.SetActive(false);
+        Wrist.gameObject.SetActive(false);
         BackBend.gameObject.SetActive(false);
+
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
         gyroPanel.gameObject.SetActive(false);
@@ -170,14 +171,15 @@ public sealed class BlazePoseLowRow : MonoBehaviour
         CounterAudio.clip = Counter_Audio;
 
         GyroScript = gyro.GetComponent<Gyro_Manager>();
+    }
 
-}
     private void OnDestroy()
     {
         GetComponent<WebCamInput>().OnTextureUpdate.RemoveListener(OnTextureUpdate);
         pose?.Dispose();
         drawer?.Dispose();
     }
+
     private void OnTextureUpdate(Texture texture)
     {
         if (runBackground)
@@ -192,24 +194,17 @@ public sealed class BlazePoseLowRow : MonoBehaviour
             Invoke(texture);
         }
     }
+
     private void Update()
     {
         startExercise.gameObject.SetActive(false);
         Bracing.gameObject.SetActive(false);
-        NeckTilt.gameObject.SetActive(false);
+        LowRow.gameObject.SetActive(false);
+        Wrist.gameObject.SetActive(false);
         BackBend.gameObject.SetActive(false);
-        //necktiltObject.gameObject.SetActive(false);
-        Shrugging.gameObject.SetActive(false);
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
-
-        //if (SystemInfo.supportsGyroscope)
-        //{
-        //    //Debug.Log("GyroToUnity(Input.gyro.attitude): " + GyroToUnity(Input.gyro.attitude));
-        //    //Debug.Log("GyroToUnity(Input.gyro.attitude)[0]: " + GyroToUnity(Input.gyro.attitude)[0]);
-
-        //}
 
         gyrovalues_new = GyroScript.gyrovalues*10;
         //gyrovalues_new = 2f;
@@ -274,10 +269,10 @@ public sealed class BlazePoseLowRow : MonoBehaviour
 
                         startExercise.gameObject.SetActive(false);
                         Bracing.gameObject.SetActive(false);
-                        NeckTilt.gameObject.SetActive(false);           
+                        LowRow.gameObject.SetActive(false);
+                        Wrist.gameObject.SetActive(false);
                         BackBend.gameObject.SetActive(false);
-                        //necktiltObject.gameObject.SetActive(false);
-                        Shrugging.gameObject.SetActive(false);
+
                         if(t1<0 && t2<0){
                             CheckStandStillRight();
                         }
@@ -293,9 +288,10 @@ public sealed class BlazePoseLowRow : MonoBehaviour
 
                     startExercise.gameObject.SetActive(false);
                     Bracing.gameObject.SetActive(false);
-                    NeckTilt.gameObject.SetActive(false);
-                    //necktiltObject.gameObject.SetActive(false);
-                    Shrugging.gameObject.SetActive(false);
+                    LowRow.gameObject.SetActive(false);
+                    Wrist.gameObject.SetActive(false);
+                    BackBend.gameObject.SetActive(false);
+
                     if(t1<0 && t2<0){
                         CheckStandStillRight();
                     }
@@ -372,7 +368,7 @@ public sealed class BlazePoseLowRow : MonoBehaviour
                                 if(ShruggingCounter < 3)  //counter+1
                                 {
                                     ShruggingAudio.Play();
-                                    Shrugging.gameObject.SetActive(true);
+                                    // Shrugging.gameObject.SetActive(true);
                                 }
 
                                 if (ShruggingAudio.isPlaying) //lower master audio sound
@@ -390,7 +386,7 @@ public sealed class BlazePoseLowRow : MonoBehaviour
                                 if (NeckTiltCounter < 3)  //counter+1
                                 {
                                     NeckTiltAudio.Play();
-                                    NeckTilt.gameObject.SetActive(true);
+                                    // NeckTilt.gameObject.SetActive(true);
                                     //necktiltObject.gameObject.SetActive(true);
                                 }
                                 if (NeckTiltAudio.isPlaying) //lower master audio sound
@@ -408,7 +404,7 @@ public sealed class BlazePoseLowRow : MonoBehaviour
                                 if (NeckRotationCounter < 3)  //counter+1
                                 {
                                     NeckRotationAudio.Play();
-                                    NeckRotaion.gameObject.SetActive(true);
+                                    // NeckRotaion.gameObject.SetActive(true);
                                     // NeckRotaionObject.gameObject.SetActive(true);
                                 }
                                 if (NeckRotationAudio.isPlaying) //lower master audio sound
@@ -708,14 +704,14 @@ public sealed class BlazePoseLowRow : MonoBehaviour
         if (LowRowAngleCount > 20)
         {
             LowRowFlag = true;
-            Bracing.text = "Low Row";
-            Bracing.gameObject.SetActive(true);
+            LowRow.text = "Low Row";
+            LowRow.gameObject.SetActive(true);
             sliderCount = sliderCount+1f;
         }
         else
         {
             LowRowFlag = false;
-            Bracing.gameObject.SetActive(false);
+            LowRow.gameObject.SetActive(false);
         }
 
         if (PrevLowRowFlag != LowRowFlag)
@@ -759,14 +755,14 @@ public sealed class BlazePoseLowRow : MonoBehaviour
         if (LowRowAngleCount > 20)
         {
             LowRowFlag = true;
-            Bracing.text = "Low Row";
-            Bracing.gameObject.SetActive(true);
+            LowRow.text = "Low Row";
+            LowRow.gameObject.SetActive(true);
             sliderCount = sliderCount+1f;
         }
         else
         {
             LowRowFlag = false;
-            Bracing.gameObject.SetActive(false);
+            LowRow.gameObject.SetActive(false);
         }
 
         if (PrevLowRowFlag != LowRowFlag)
@@ -810,12 +806,12 @@ public sealed class BlazePoseLowRow : MonoBehaviour
 
         if (CheckBracingCount > 10)
         {
-            NeckRotaion.text = "Bracing";
-            NeckRotaion.gameObject.SetActive(true);
+            Bracing.text = "Bracing";
+            Bracing.gameObject.SetActive(true);
         }
         else
         {
-            NeckRotaion.gameObject.SetActive(false);
+            Bracing.gameObject.SetActive(false);
         }
 
         return DeltaShoulderDist;
@@ -885,17 +881,17 @@ public sealed class BlazePoseLowRow : MonoBehaviour
 
         if (WrsitUpCount > 30)
         {
-            Shrugging.text = "Wrsit Up";
-            Shrugging.gameObject.SetActive(true);
+            Wrist.text = "Wrsit Up";
+            Wrist.gameObject.SetActive(true);
         }
         else if (WrsitDownCount > 35)
         {
-            Shrugging.text = "Wrsit Down";
-            Shrugging.gameObject.SetActive(true);
+            Wrist.text = "Wrsit Down";
+            Wrist.gameObject.SetActive(true);
         }
         else
         {
-            Shrugging.gameObject.SetActive(false);
+            Wrist.gameObject.SetActive(false);
         }
 
         return WrsitElbowDistY;
@@ -910,17 +906,17 @@ public sealed class BlazePoseLowRow : MonoBehaviour
 
         if (WrsitUpCount > 30)
         {
-            Shrugging.text = "Wrsit Up";
-            Shrugging.gameObject.SetActive(true);
+            Wrist.text = "Wrsit Up";
+            Wrist.gameObject.SetActive(true);
         }
         else if (WrsitDownCount > 35)
         {
-            Shrugging.text = "Wrsit Down";
-            Shrugging.gameObject.SetActive(true);
+            Wrist.text = "Wrsit Down";
+            Wrist.gameObject.SetActive(true);
         }
         else
         {
-            Shrugging.gameObject.SetActive(false);
+            Wrist.gameObject.SetActive(false);
         }
 
         return WrsitElbowDistY;

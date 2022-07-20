@@ -6,24 +6,17 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// BlazePose form MediaPipe
-/// https://github.com/google/mediapipe
-/// https://viz.mediapipe.dev/demo/pose_tracking
-/// </summary>
 [RequireComponent(typeof(WebCamInput))]
 public sealed class BlazePoseSRSE : MonoBehaviour
 {
     [SerializeField]
     private BlazePose.Options options = default;
-
     [SerializeField]
     private RectTransform containerView = null;
     [SerializeField]
     private RawImage debugView = null;
     [SerializeField]
     private RawImage segmentationView = null;
-
     [SerializeField]
     private Canvas canvas = null;
     [SerializeField]
@@ -43,14 +36,11 @@ public sealed class BlazePoseSRSE : MonoBehaviour
     [SerializeField] 
     Text StandStill;
     [SerializeField] 
-    Text ExerciseSS;
+    Text ExerciseSRSE;
     [SerializeField] 
-    Text TorsoTilt;
+    Text NeckTilt;
     [SerializeField] 
-    Text elbowBend;
-    [SerializeField] 
-    Text sideBend;
-
+    Text BackBend;
     [SerializeField] 
     Text NoBracing;
     [SerializeField] 
@@ -77,22 +67,6 @@ public sealed class BlazePoseSRSE : MonoBehaviour
     public AudioSource HandFrontAudio;
     public AudioSource HandSideAudio;
     public AudioSource CounterAudio;
-
-    [Header("Error Object")]
-    [SerializeField] 
-    GameObject necktiltObject;
-    [SerializeField] 
-    GameObject NeckRotaionObject;
-    [SerializeField] 
-    GameObject r_shoulderShrugging;
-    [SerializeField] 
-    GameObject l_shoulderShrugging;
-    [SerializeField]
-    AudioClip torsoTiltObject;
-    [SerializeField]
-    AudioClip ElbowBendObject;
-    [SerializeField]
-    AudioClip sideBendObject;
 
     //Check StandStill varibales
     int Frame;
@@ -123,62 +97,31 @@ public sealed class BlazePoseSRSE : MonoBehaviour
     float PrevKneeRY = 0;
 
     //Bracing Variables
-    float StartingShoulderDist;
     int CheckBracingCount = 0;
     float StartingNeckDist;
     int CheckNeckDistCount = 0;
-    int CheckNeckRotationCount = 0;
-    float StartinShoulderPosition;
+    float StartingShoulderPosition;
     int CheckShruggingCount = 0;
 
-    //SS variables
-    bool CheckSSRightFlag = false;
+    //SRSE variables
     bool SRSEFlag = false;
     bool prevSRSEFlag = false;
-    int CheckSSRightCount = 0;
-    int CheckSSLeftCount = 0;
-    int CheckSSRightSideCount = 0;
-    int CheckSSLeftSideCount = 0;
-    int CheckSSRightFrontCount = 0;
-    int CheckSSLeftFrontCount = 0;
     int SRSECounter = 0;
-    bool TorsoTiltFlag = false;
-    int CheckTorsoTiltCount = 0;
-    float StartingSideAngleRight = 0;
-    float StartingSideAngleLeft = 0;
-    int SideAngleRightCount = 0;
-    int SideAngleLeftCount = 0;
-    int CheckBracingSSCount = 0;
-    bool BracingFlag = false;
-    float StartingLeftShoulderY;
-    float StartingRightShoulderY;
-    float LeftShoulderCount = 0;
-    float RightShoulderCount = 0;
-    float ElbowBendCount = 0;
+    int CheckSRSECount = 0;
+    int BackBendCount = 0;
+
+    //Audio variables (need to be changed)
     int CoolDownCount = 0;
     bool ElbowBendFlag = false;
     bool SideBendFlag = false;
     bool ShruggingFlag = false;
+    bool TorsoTiltFlag = false;
     bool HandFrontFlag = false;
     bool HandSideFlag = false;
     int ErrorAudio = 0;
     bool[] CheckPriority = new bool[7];
 
-
-
-    //Common in SS and SRSE
-    float StartingRightWristY = 0;
-    float StartingRightWristX = 0;
-    float StartingLeftWristY = 0;
-    float StartingLeftWristX = 0;
-
-    //SRSE 
-    float StartingWristDistX = 0;
-    float StartingWristY = 0;
-    float StartingTorsoDist = 0;
-    int CheckSRSECount = 0;
-    int BackBendCount = 0;
-
+    //Slider variables
     public Slider slider;
     float sliderCount = 0;
     float sliderValue = 0;
@@ -196,12 +139,11 @@ public sealed class BlazePoseSRSE : MonoBehaviour
         slider.value = 0;
         loadingAnim.gameObject.SetActive(false);
 
-        ExerciseSS.gameObject.SetActive(false);
+        ExerciseSRSE.gameObject.SetActive(false);
         NoBracing.gameObject.SetActive(false);
         Shrugging.gameObject.SetActive(false);
-        TorsoTilt.gameObject.SetActive(false);
-        sideBend.gameObject.SetActive(false);
-        elbowBend.gameObject.SetActive(false);
+        BackBend.gameObject.SetActive(false);
+        NeckTilt.gameObject.SetActive(false);
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
@@ -263,12 +205,11 @@ public sealed class BlazePoseSRSE : MonoBehaviour
     private void Update()
     {
         //drawer.DrawPoseResult(poseResult);
-        ExerciseSS.gameObject.SetActive(false);
+        ExerciseSRSE.gameObject.SetActive(false);
         NoBracing.gameObject.SetActive(false);
         Shrugging.gameObject.SetActive(false);
-        TorsoTilt.gameObject.SetActive(false);
-        sideBend.gameObject.SetActive(false);
-        elbowBend.gameObject.SetActive(false);
+        BackBend.gameObject.SetActive(false);
+        NeckTilt.gameObject.SetActive(false);
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
@@ -329,11 +270,10 @@ public sealed class BlazePoseSRSE : MonoBehaviour
                         greenSignal.gameObject.SetActive(false);
                         redSignal.gameObject.SetActive(true);
                         //textElementStandStill.gameObject.SetActive(false);
-                        ExerciseSS.gameObject.SetActive(false);
+                        ExerciseSRSE.gameObject.SetActive(false);
                         NoBracing.gameObject.SetActive(false);
-                        TorsoTilt.gameObject.SetActive(false);
-                        sideBend.gameObject.SetActive(false);
-                        elbowBend.gameObject.SetActive(false);
+                        BackBend.gameObject.SetActive(false);
+                        NeckTilt.gameObject.SetActive(false);
                         if(t1<0 && t2<0){
                             CheckStandStillRight();
                         }
@@ -347,11 +287,10 @@ public sealed class BlazePoseSRSE : MonoBehaviour
                     greenSignal.gameObject.SetActive(false);
                     redSignal.gameObject.SetActive(true);
                     //textElementStandStill.gameObject.SetActive(false);
-                    ExerciseSS.gameObject.SetActive(false);
+                    ExerciseSRSE.gameObject.SetActive(false);
                     NoBracing.gameObject.SetActive(false);
-                    TorsoTilt.gameObject.SetActive(false);
-                    sideBend.gameObject.SetActive(false);
-                    elbowBend.gameObject.SetActive(false);
+                    BackBend.gameObject.SetActive(false);
+                    NeckTilt.gameObject.SetActive(false);
                     if(t1<0 && t2<0){
                         CheckStandStillRight();
                     }
@@ -370,7 +309,6 @@ public sealed class BlazePoseSRSE : MonoBehaviour
                 {
                     drawer.DrawWorldLandmarks(landmarkResult, visibilityThreshold);
                 }
-                //Frame += 1;
                 Frame = Frame + 1;
 
             }
@@ -387,11 +325,6 @@ public sealed class BlazePoseSRSE : MonoBehaviour
             greenSignal.gameObject.SetActive(false);
             redSignal.gameObject.SetActive(true);
         }
-
-        // if (StillFlag == true && !SSAudio.isPlaying)
-        // {
-        //     SSAudio.Play();
-        // }
 
         if (StillFlag == true)
         {
@@ -630,10 +563,7 @@ private float CheckStandStillRight()
         float delta = Math.Abs((d1 + d2 + d3 + d4 + d5) * 100);
 
         Debug.Log("delta left: "+delta);
-        //Debug.Log("torsoslope: "+torsoslope);
-        // Debug.Log("viewportLandmarks[32][0]: "+landmarkResult.viewportLandmarks[32][0]*100);
-        // Debug.Log("viewportLandmarks[28][0]: "+landmarkResult.viewportLandmarks[28][0]*100);
-        // && torsoslope>1.5f
+
         if ((Math.Abs(delta) < 2.0) && (landmarkResult.viewportLandmarks[31][0] > landmarkResult.viewportLandmarks[27][0] ))
         {
             StillCount += 1;
@@ -683,14 +613,14 @@ private float CheckStandStillRight()
         if (CheckSRSECount > 15)
         {
             SRSEFlag = true;
-            ExerciseSS.text = "SRSE";
-            ExerciseSS.gameObject.SetActive(true);
+            ExerciseSRSE.text = "SRSE";
+            ExerciseSRSE.gameObject.SetActive(true);
             sliderCount = sliderCount+1f;
         }
         else
         {
             SRSEFlag = false;
-            ExerciseSS.gameObject.SetActive(false);
+            ExerciseSRSE.gameObject.SetActive(false);
         }
 
         // Debug.Log("CheckSRSECount: " + CheckSRSECount);
@@ -735,14 +665,14 @@ private float CheckStandStillRight()
         if (CheckSRSECount > 15)
         {
             SRSEFlag = true;
-            ExerciseSS.text = "SRSE";
-            ExerciseSS.gameObject.SetActive(true);
+            ExerciseSRSE.text = "SRSE";
+            ExerciseSRSE.gameObject.SetActive(true);
             sliderCount = sliderCount+1f;
         }
         else
         {
             SRSEFlag = false;
-            ExerciseSS.gameObject.SetActive(false);
+            ExerciseSRSE.gameObject.SetActive(false);
         }
 
         if (prevSRSEFlag != SRSEFlag)
@@ -794,9 +724,9 @@ private float CheckStandStillRight()
         float ShoulderPosition = ((landmarkResult.viewportLandmarks[12][1] + landmarkResult.viewportLandmarks[11][1]) / 2);
         if (Frame < (StillFrame + 5))
         {
-            StartinShoulderPosition = ShoulderPosition;
+            StartingShoulderPosition = ShoulderPosition;
         }
-        float deltaShoulderPosition = ((ShoulderPosition - StartinShoulderPosition) / NormalizingFactor) * 100;
+        float deltaShoulderPosition = ((ShoulderPosition - StartingShoulderPosition) / NormalizingFactor) * 100;
         //Debug.Log("deltaShoulderPosition: " + deltaShoulderPosition);
         CheckShruggingCount = (deltaShoulderPosition > 2.8f) ? (CheckShruggingCount + 1) : (CheckShruggingCount = 0);
         if (CheckShruggingCount > 20)
@@ -822,18 +752,18 @@ private float CheckStandStillRight()
         CheckNeckDistCount = (deltaNeckDist > 7) ? (CheckNeckDistCount + 1) : (CheckNeckDistCount = 0);
         if (CheckNeckDistCount > 20)
         {
-            elbowBend.text = "Neck Tilt";
-            elbowBend.gameObject.SetActive(true);
+            NeckTilt.text = "Neck Tilt";
+            NeckTilt.gameObject.SetActive(true);
         }
         else
         {
-            elbowBend.gameObject.SetActive(false);
+            NeckTilt.gameObject.SetActive(false);
         }
 
         return deltaNeckDist;
     }
 
-        private float CheckBackBendRight()
+    private float CheckBackBendRight()
     {
         float torsoslopeRight = (landmarkResult.viewportLandmarks[24][1] - landmarkResult.viewportLandmarks[12][1]) / (landmarkResult.viewportLandmarks[24][0] - landmarkResult.viewportLandmarks[12][0]);
         float torsoslopeRight1 = (landmarkResult.viewportLandmarks[26][1] - landmarkResult.viewportLandmarks[12][1]) / (landmarkResult.viewportLandmarks[26][0] - landmarkResult.viewportLandmarks[12][0]);
@@ -845,12 +775,12 @@ private float CheckStandStillRight()
 
         if (BackBendCount > 20)
         {
-            sideBend.text = "Back Bend";
-            sideBend.gameObject.SetActive(true);
+            BackBend.text = "Back Bend";
+            BackBend.gameObject.SetActive(true);
         }
         else
         {
-            sideBend.gameObject.SetActive(false);
+            BackBend.gameObject.SetActive(false);
         }
         return torsoslopeRight;
     }
@@ -863,12 +793,12 @@ private float CheckStandStillRight()
 
         if (BackBendCount > 20)
         {
-            sideBend.text = "Back Bend";
-            sideBend.gameObject.SetActive(true);
+            BackBend.text = "Back Bend";
+            BackBend.gameObject.SetActive(true);
         }
         else
         {
-            sideBend.gameObject.SetActive(false);
+            BackBend.gameObject.SetActive(false);
         }
 
         return torsoslopeLeft;

@@ -1128,7 +1128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 1729284088}
+  m_Material: {fileID: 1781136777}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -4850,13 +4850,9 @@ MonoBehaviour:
   NeckRotaionObject: {fileID: 438568657}
   r_shoulderShrugging: {fileID: 937451017}
   l_shoulderShrugging: {fileID: 164474691}
-  startExercise_ls_Object: {fileID: 8300000, guid: 2b39e608c317d524a8e6e234fe7cc21e,
-    type: 3}
-  TorsoTilt_Object: {fileID: 8300000, guid: ccb9619e67353304b9fa7625fa6c747e, type: 3}
-  ElbowBend_Object: {fileID: 8300000, guid: 4370284c17ebab3408238cec9f1b6f61, type: 3}
-  SideBend_Object: {fileID: 8300000, guid: d67b1b379eb769648a0020d89687487c, type: 3}
   greenSignal: {fileID: 257454222}
   redSignal: {fileID: 931929113}
+  slider: {fileID: 0}
   gyrovalues_new: 0
   gyro: {fileID: 0}
   gyroPanel: {fileID: 0}
@@ -6063,40 +6059,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1719727469}
   m_CullTransparentMesh: 1
---- !u!21 &1729284088
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/RoundedCorners/RoundedCorners
-  m_Shader: {fileID: 4800000, guid: 0bd2ec5d73751e34a814274a454bec41, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - _ColorMask: 15
-    - _Stencil: 0
-    - _StencilComp: 8
-    - _StencilOp: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    - _UseUIAlphaClip: 0
-    m_Colors:
-    - _WidthHeightRadius: {r: 800, g: 379.4763, b: 100, a: 0}
-  m_BuildTextureStacks: []
 --- !u!1 &1755417855
 GameObject:
   m_ObjectHideFlags: 0
@@ -6175,11 +6137,11 @@ MonoBehaviour:
   NeckRotaionObject: {fileID: 1813113967}
   r_shoulderShrugging: {fileID: 982345831}
   l_shoulderShrugging: {fileID: 815194819}
+  backgroundMusic: {fileID: 69455018}
+  volumeBG: 0.3
   greenSignal: {fileID: 257454222}
   redSignal: {fileID: 1905218549}
   slider: {fileID: 2128484211}
-  backgroundMusic: {fileID: 69455018}
-  volumeBG: 0.3
   gyrovalues_new: 0
   gyro: {fileID: 1675820226}
   gyroPanel: {fileID: 1273227919}
@@ -6723,6 +6685,40 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1779110685}
   m_CullTransparentMesh: 1
+--- !u!21 &1781136777
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI/RoundedCorners/RoundedCorners
+  m_Shader: {fileID: 4800000, guid: 0bd2ec5d73751e34a814274a454bec41, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _ColorMask: 15
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _UseUIAlphaClip: 0
+    m_Colors:
+    - _WidthHeightRadius: {r: 800, g: 379.4763, b: 100, a: 0}
+  m_BuildTextureStacks: []
 --- !u!1 &1796737790
 GameObject:
   m_ObjectHideFlags: 0
@@ -7872,7 +7868,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 1
+  m_Value: 0.563
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

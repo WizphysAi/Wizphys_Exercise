@@ -532,6 +532,7 @@ public sealed class BlazePoseBracing : MonoBehaviour
 
         sliderValue = (float)(sliderCount/70f);
         slider.value = sliderValue; 
+        
         PrevCheckBracingFlag = CheckBracingFlag;
         return DeltaShoulderDist;
     }

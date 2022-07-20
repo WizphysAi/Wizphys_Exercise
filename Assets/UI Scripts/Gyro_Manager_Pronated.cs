@@ -1,12 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Gyro_Manager : MonoBehaviour
+public class Gyro_Manager_Pronated : MonoBehaviour
 {
     //[SerializeField] Text AngleValue;
     [SerializeField] Slider gyroSlider;
     [SerializeField] Gradient gradient;
-    public float gyrovalues;
+    //public float gyrovalues;
     public float gyrovalues_pronated;
     
     void Start()
@@ -31,9 +31,9 @@ public class Gyro_Manager : MonoBehaviour
         // Debug.Log("yaw: "+yaw);
         // Debug.Log("roll: "+roll);
         //AngleValue.text = "AngleValue:" + (gyrovalues*10).ToString("n2");
-        gyrovalues = Mathf.Atan2(2 * x * w - 2 * y * z, 1 - 2 * x * x - 2 * z * z);
+        //gyrovalues = Mathf.Atan2(2 * x * w - 2 * y * z, 1 - 2 * x * x - 2 * z * z);
         gyrovalues_pronated = Mathf.Asin(2*x*y + 2*z*w);
-
-        gyroSlider.value = gyrovalues*10;
+        Debug.Log("gyrovalues_pronated*10: "+gyrovalues_pronated*10);
+        gyroSlider.value = gyrovalues_pronated*10;
     }
 }

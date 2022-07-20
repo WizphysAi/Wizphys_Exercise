@@ -6,24 +6,17 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// BlazePose form MediaPipe
-/// https://github.com/google/mediapipe
-/// https://viz.mediapipe.dev/demo/pose_tracking
-/// </summary>
 [RequireComponent(typeof(WebCamInput))]
 public sealed class BlazePoseSA : MonoBehaviour
 {
     [SerializeField]
     private BlazePose.Options options = default;
-
     [SerializeField]
     private RectTransform containerView = null;
     [SerializeField]
     private RawImage debugView = null;
     [SerializeField]
     private RawImage segmentationView = null;
-
     [SerializeField]
     private Canvas canvas = null;
     [SerializeField]
@@ -45,27 +38,14 @@ public sealed class BlazePoseSA : MonoBehaviour
     [SerializeField] 
     Text startExercise;
     [SerializeField] 
-    Text startExercise_ls;
-
+    Text SA;
     [SerializeField] 
-    Text NoBracing;
-    [SerializeField] 
-    Text TorsoTilt;
-    [SerializeField] 
-    Text ElbowBend;
-    [SerializeField] 
-    Text SideBend;
-    [SerializeField]
-    Text WristWrong;
-
+    Text Wrist;
     [SerializeField]
     Text Counter;
 
 
     [Header("Audio Souce")]
-    //[SerializeField] AudioClip StartExercise_audio;
-    //[SerializeField] AudioClip StandStill_audio;
-    //[SerializeField] AudioClip StandInFrame_audio;
     [SerializeField] AudioClip IS_audio;
     [SerializeField] AudioClip sidebend_audio;
     [SerializeField] AudioClip torsotilt_audio;
@@ -74,10 +54,6 @@ public sealed class BlazePoseSA : MonoBehaviour
     [SerializeField] AudioClip wristdown_audio;
     [SerializeField] AudioClip Counter_audio;
 
-
-    //public AudioSource StartExerciseAudio;
-    //public AudioSource StandStillAudio;
-    //public AudioSource StandInFrameAudio;
     public AudioSource ISAudio;
     public AudioSource SideBendAudio;
     public AudioSource TorsoTiltAudio;
@@ -85,26 +61,6 @@ public sealed class BlazePoseSA : MonoBehaviour
     public AudioSource WristUpAudio;
     public AudioSource WristDownAudio;
     public AudioSource CounterAudio;
-
-    [Header("Error Object")]
-    [SerializeField] 
-    GameObject necktiltObject;
-    [SerializeField] 
-    GameObject NeckRotaionObject;
-    [SerializeField] 
-    GameObject r_shoulderShrugging;
-    [SerializeField] 
-    GameObject l_shoulderShrugging;
-
-    [SerializeField]
-    AudioClip startExercise_ls_Object;
-    [SerializeField]
-    AudioClip TorsoTilt_Object;
-    [SerializeField]
-    AudioClip ElbowBend_Object;
-    [SerializeField]
-    AudioClip SideBend_Object;
-
 
     //Check StandStill varibales
     int Frame;
@@ -128,39 +84,9 @@ public sealed class BlazePoseSA : MonoBehaviour
     float PrevKneeLY = 0;
     float PrevKneeRY = 0;
 
-    //IS varialbes
-    Vector4 StartingWristRight;
-    Vector4 StartingElbowRight;
-    Vector4 StartingWristLeft;
-    Vector4 StartingElbowLeft;
-    Vector4 WristRight;
-    Vector4 WristLeft;
-    int CheckISLeftCount;
-    int CheckISRightCount;
-    float IsAngleRight;
-    float IsAngleLeft;
-    int CheckISelbowRight;
-    int CheckISelbowLeft;
+    //Audio variables 
     bool ISElbowBendFlag = false;
-    int CheckISElbowLeftCount;
-    int CheckISElbowRightCount;
-    bool ISLeftFlag = false;
-    bool PrevISLeftFlag = false;
-    bool ISRightFlag = false;
-    bool PrevISRightFlag = false;
-    int ISCounter = 0;
-    int CheckBracingISCount = 0;
-    bool BracingFlag = false;
-    int CheckTorsoTiltCount = 0;
     bool TorsoTiltFlag = false;
-    float StartingShoulderDist;
-    float StartingSideAngleRight;
-    float StartingSideAngleLeft;
-    int SideAngleRightCount;
-    int SideAngleLeftCount;
-    float StartingWristLeftY;
-    int WristLeftUpCount = 0;
-    int WristLeftDownCount = 0;
     bool[] CheckPriority = new bool[6];
     int ErrorAudio = 0;
     int CoolDownCount = 0;
@@ -168,17 +94,19 @@ public sealed class BlazePoseSA : MonoBehaviour
     bool WristUpFlag = false;
     bool WristDownFlag = false;
 
-
-    float StartingWristDist = 0;
-    bool WristWide = false;
+    //SA Variable
     bool SAFlag = false;
     bool PrevSAFlag = false;
     int SACounter = 0;
-    float StartingWristY = 0;
+    float StartingWristDist = 0;
+    bool WristWide = false;
 
+    //Wrist Variable
+    float StartingWristY = 0;
     int WristUpCount = 0;
     int WristDownCount = 0;
 
+    //Slider variable
     public Slider slider;
     float sliderCount = 0;
     float sliderValue = 0;
@@ -196,12 +124,9 @@ public sealed class BlazePoseSA : MonoBehaviour
     {
         slider.value = 0;
         loadingAnim.gameObject.SetActive(false);
-        startExercise_ls.gameObject.SetActive(false);
-        NoBracing.gameObject.SetActive(false);
-        TorsoTilt.gameObject.SetActive(false);
-        ElbowBend.gameObject.SetActive(false);
-        SideBend.gameObject.SetActive(false);
-        WristWrong.gameObject.SetActive(false);
+        SA.gameObject.SetActive(false);
+        Wrist.gameObject.SetActive(false);
+        Wrist.gameObject.SetActive(false);
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
@@ -263,18 +188,14 @@ public sealed class BlazePoseSA : MonoBehaviour
     private void Update()
     {
         //drawer.DrawPoseResult(poseResult);
-        startExercise_ls.gameObject.SetActive(false);
-        NoBracing.gameObject.SetActive(false);
-        TorsoTilt.gameObject.SetActive(false);
-        ElbowBend.gameObject.SetActive(false);
-        SideBend.gameObject.SetActive(false);
-        WristWrong.gameObject.SetActive(false);
+        SA.gameObject.SetActive(false);
+        Wrist.gameObject.SetActive(false);
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
 
         gyrovalues_new = GyroScript.gyrovalues*10;
-        // gyrovalues_new = 2.0f;
+        gyrovalues_new = 2.0f;
 
         if (3 > gyrovalues_new && gyrovalues_new > 1.8)
         {
@@ -307,12 +228,9 @@ public sealed class BlazePoseSA : MonoBehaviour
                 }
                 else
                 {
-                    startExercise_ls.gameObject.SetActive(false);
-                    NoBracing.gameObject.SetActive(false);
-                    TorsoTilt.gameObject.SetActive(false);
-                    ElbowBend.gameObject.SetActive(false);
-                    SideBend.gameObject.SetActive(false);
-                    WristWrong.gameObject.SetActive(false);
+                    SA.gameObject.SetActive(false);
+                    Wrist.gameObject.SetActive(false);
+    
                     CheckStandStill();
 
                     greenSignal.gameObject.SetActive(false);
@@ -587,13 +505,13 @@ public sealed class BlazePoseSA : MonoBehaviour
 
         if (SAFlag == true)
         {
-            startExercise_ls.text = "Serratus Anterior";
-            startExercise_ls.gameObject.SetActive(true);
+            SA.text = "Serratus Anterior";
+            SA.gameObject.SetActive(true);
             sliderCount = sliderCount+1f;
         }
         else 
         {
-            startExercise_ls.gameObject.SetActive(false);
+            SA.gameObject.SetActive(false);
         }
 
 
@@ -626,7 +544,7 @@ public sealed class BlazePoseSA : MonoBehaviour
             else{
                 WristUpCount = 0;
                 WristDownCount = 0;
-                ElbowBend.gameObject.SetActive(false);
+                Wrist.gameObject.SetActive(false);
             }
         }
         else{
@@ -638,12 +556,12 @@ public sealed class BlazePoseSA : MonoBehaviour
         // Debug.Log("WristDownCount: "+WristDownCount);
 
         if(WristUpCount > 25){
-            ElbowBend.text = "Wrist Up";
-            ElbowBend.gameObject.SetActive(true);
+            Wrist.text = "Wrist Up";
+            Wrist.gameObject.SetActive(true);
         }
         if(WristDownCount > 25){
-            ElbowBend.text = "Wrist Down";
-            ElbowBend.gameObject.SetActive(true);
+            Wrist.text = "Wrist Down";
+            Wrist.gameObject.SetActive(true);
         }
 
         // Debug.Log("WristWide: " + WristWide);
@@ -657,12 +575,6 @@ public sealed class BlazePoseSA : MonoBehaviour
 
         return deltaWristDist;
     }
-
-    // private float checkWristSA(){
-
-
-    // }
-
 }
 
 

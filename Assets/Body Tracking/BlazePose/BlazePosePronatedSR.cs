@@ -6,17 +6,11 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// BlazePose form MediaPipe
-/// https://github.com/google/mediapipe
-/// https://viz.mediapipe.dev/demo/pose_tracking
-/// </summary>
 [RequireComponent(typeof(WebCamInput))]
 public sealed class BlazePosePronatedSR : MonoBehaviour
 {
     [SerializeField]
     private BlazePose.Options options = default;
-
     [SerializeField]
     private RectTransform containerView = null;
     [SerializeField]
@@ -50,25 +44,9 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
     [Header("Audio Souce")]
     [SerializeField]
     AudioClip pronated_Audio;
-    //[SerializeField]
-    //AudioClip neckUp_Audio;
-    //[SerializeField]
-    //AudioClip pbLeft_Audio;
-    //[SerializeField]
-    //AudioClip pbRight_audio;
 
     [SerializeField] AudioClip Counter_Audio;
     public AudioSource CounterAudio;
-
-    [Header("Error Object")]
-    [SerializeField]
-    AudioClip pronated_Object;
-    [SerializeField]
-    AudioClip neckUp_Object;
-    [SerializeField]
-    AudioClip pbLeft_Object;
-    [SerializeField]
-    AudioClip pbRight_Object;
 
     [Header("Exercise Start/Stop Signal")]
     [SerializeField] Image greenSignal;
@@ -87,42 +65,16 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
     float PrevKneeLX = 0;
     float PrevKneeRX = 0;
 
-
     //Check Movement Variables
     int MoveCount = 0;
     float PrevHipLY = 0;
     float PrevHipRY = 0;
-    float PrevKneeLY = 0;
-    float PrevKneeRY = 0;
 
     //SS variables
-    float StartingLeftWristY;
-    float StartingRightWristY;
-    float StartingLeftWristX;
-    float StartingRightWristX;
-    public bool CheckSSRightFlag = false;
-    public bool CheckSSLeftFlag = false;
-    int CheckSSRightCount = 0;
-    int CheckSSLeftCount = 0;
-    int CheckSSRightSideCount = 0;
-    int CheckSSLeftSideCount = 0;
-    int CheckSSRightFrontCount = 0;
-    int CheckSSLeftFrontCount = 0;
-    int CheckElbowBendLeftCount = 0;
-    int CheckElbowBendRightCount = 0;
-    int CheckSideBendLeftCount = 0;
-    int CheckTorsoTiltCount = 0;
-    public bool TorsoTiltFlag = false;
     float StartingLeftShoulderY = 0;
     float StartingRightShoulderY = 0;
-    int LeftShoulderCount = 0;
-    int RightShoulderCount = 0;
     float StartingY;
 
-    float StartingSideAngleRight = 0;
-    float StartingSideAngleLeft = 0;
-    int SideAngleRightCount = 0;
-    int SideAngleLeftCount = 0;
     float PrevElbowX = 0;
 
     //PSR variables
@@ -133,13 +85,11 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
     int CheckPBLeftCount;
     int CheckNeckPronatedCount;
     int PronatedCounter = 0;
-
     bool prevPronatedLeftFlag = false;
     bool PronatedLeftFlag = false;
-    bool PBLeftFlag = false;
-
     bool PronatedRight = false;
 
+    //Slider variable
     public Slider slider;
     float sliderCount = 0;
     float sliderValue = 0;
@@ -152,10 +102,8 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
     {
         slider.value = 0;
         Exercise.gameObject.SetActive(false);
-        //textElementError1.gameObject.SetActive(false);
         pb_Left_Right.gameObject.SetActive(false);
         neck_Up.gameObject.SetActive(false);
-        //textElementError4.gameObject.SetActive(false);
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
@@ -203,31 +151,16 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
 
     private void Update()
     {
-        //Debug.Log("update called");
-        //drawer.DrawPoseResult(poseResult);
         Exercise.gameObject.SetActive(false);
-        //textElementError1.gameObject.SetActive(false);
         pb_Left_Right.gameObject.SetActive(false);
         neck_Up.gameObject.SetActive(false);
-        //textElementError4.gameObject.SetActive(false);F
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
 
-        if (SystemInfo.supportsGyroscope)
-        {
-            //Debug.Log("GyroToUnity(Input.gyro.attitude): " + GyroToUnity(Input.gyro.attitude));
-            //Debug.Log("GyroToUnity(Input.gyro.attitude)[0]: " + GyroToUnity(Input.gyro.attitude)[0]);
-            //Debug.Log("Input.gyro.attitude.eulerAngles: "+ Input.gyro.attitude.eulerAngles);
-        }
-
         if (landmarkResult != null && landmarkResult.score > 0.2f)
         {
-            //drawer.DrawCropMatrix(pose.CropMatrix);
-            //Debug.Log("canvas.planeDistance: " + canvas.planeDistance);  
-
             float TorsoSlope = (landmarkResult.viewportLandmarks[23][1] - landmarkResult.viewportLandmarks[11][1]) / (landmarkResult.viewportLandmarks[23][0] - landmarkResult.viewportLandmarks[11][0]);
-            //Debug.Log("TorsoSlope" + TorsoSlope*10);
 
             if (StillFlag == true)
             {
@@ -237,10 +170,6 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
                 {
                     greenSignal.gameObject.SetActive(true);
                     redSignal.gameObject.SetActive(false);
-
-                    // PSR Right
-                    //CheckPSRRight();
-                    //CheckPBRight();
 
                     // PSR Left
                     if (PronatedRight == true)
@@ -253,32 +182,18 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
                         CheckPBLeft();
                         // CheckPSRLeft();
                     }
-
-                    // CheckPSRLeft();
-                    // CheckPBLeft();
-                    // CheckNeckPronated();
                 }
             }
             else
             {
-                //StandStill.gameObject.SetActive(false);
                 Exercise.gameObject.SetActive(false);
-                //textElementError1.gameObject.SetActive(false);
                 pb_Left_Right.gameObject.SetActive(false);
                 neck_Up.gameObject.SetActive(false);
-                //textElementError4.gameObject.SetActive(false);
 
                 greenSignal.gameObject.SetActive(false);
                 redSignal.gameObject.SetActive(true);
-
-                //CheckStandStill();
-                //CheckStandStillPronatedRight();
-                //CheckStandStillPronatedLeft();
                 CheckStillPronated();
             }
-
-            //Debug.Log("landmarkResult.viewportLandmarks[11] X: " + landmarkResult.viewportLandmarks[11][0]);
-
             drawer.DrawLandmarkResult(landmarkResult, visibilityThreshold, canvas.planeDistance);
 
             if (options.landmark.useWorldLandmarks)
@@ -286,7 +201,6 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
                 drawer.DrawWorldLandmarks(landmarkResult, visibilityThreshold);
             }
 
-            //Frame += 1;
             Frame = Frame + 1;
         }
         else
@@ -391,11 +305,8 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
     {
         float d1 = landmarkResult.viewportLandmarks[12][0] - PrevShoulderRX;
         float d2 = landmarkResult.viewportLandmarks[24][0] - PrevHipRX;
-        //float d1y = landmarkResult.viewportLandmarks[12][1];
-        //float d2y = landmarkResult.viewportLandmarks[24][1];
 
         float delta = Math.Abs((d1 + d2) * 100);
-        //Debug.Log("delta: "+ delta);
 
         StillCount = (Math.Abs(delta) < 1.5) ? (StillCount + 1) : (StillCount = 0);
 
@@ -405,9 +316,6 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
             StandStill.text = "Start exercise";
             StandStill.gameObject.SetActive(true);
             StillFrame = Frame;
-            //NormalizingFactor = ((d1y + d2y) / 2) - ((d3y + d4y) / 2);
-            //Debug.Log("NormalizingFactor" + NormalizingFactor);
-            //StillFrame = frame
         }
         else
         {
@@ -424,8 +332,6 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
         float d1 = landmarkResult.viewportLandmarks[11][0] - PrevShoulderLX;
         float d2 = landmarkResult.viewportLandmarks[23][0] - PrevHipLX;
         float d3 = landmarkResult.viewportLandmarks[13][0] - PrevElbowX;
-        //float d1y = landmarkResult.viewportLandmarks[12][1];
-        //float d2y = landmarkResult.viewportLandmarks[24][1];
 
         float delta = Math.Abs((d1 + d2) * 100);
 
@@ -440,9 +346,6 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
             StandStill.text = "Start exercise";
             StandStill.gameObject.SetActive(true);
             StillFrame = Frame;
-            //NormalizingFactor = ((d1y + d2y) / 2) - ((d3y + d4y) / 2);
-            //Debug.Log("NormalizingFactor" + NormalizingFactor);
-            //StillFrame = frame
         }
         else
         {
@@ -464,9 +367,6 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
 
         float TorsoSlope = (landmarkResult.viewportLandmarks[23][1] - landmarkResult.viewportLandmarks[11][1]) / (landmarkResult.viewportLandmarks[23][0] - landmarkResult.viewportLandmarks[11][0]);
         Debug.Log("TorsoSlope" + TorsoSlope);
-
-        //Debug.Log("move delta: " + delta);
-        //Debug.Log("MoveCount: " + MoveCount);
 
         MoveCount = (Math.Abs(delta) > 2 && Math.Abs(TorsoSlope * 10) > 1.5) ? (MoveCount + 1) : (MoveCount = 0);
 
@@ -538,7 +438,6 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
 
     private float CheckPSRLeftold()
     {
-        Debug.Log("PSRLeftcalled");
         var A = landmarkResult.viewportLandmarks[13];
         var B = landmarkResult.viewportLandmarks[11];
         var C = landmarkResult.viewportLandmarks[23];
@@ -599,7 +498,6 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
         }
 
         float DeltaRightShoulder = ((StartingRightShoulderY - landmarkResult.viewportLandmarks[12][1]) / (landmarkResult.viewportLandmarks[12][0] - landmarkResult.viewportLandmarks[24][0])) * 100;
-        Debug.Log("DeltaRightShoulder" + DeltaRightShoulder);
 
         CheckPBRightCount = (DeltaRightShoulder > 5) ? (CheckPBRightCount + 1) : (CheckPBRightCount = 0);
 
@@ -649,13 +547,7 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
         {
             StartingLeftShoulderY = landmarkResult.viewportLandmarks[11][1];
         }
-
-        // Debug.Log("landmarkResult.viewportLandmarks[15][1]: " + landmarkResult.viewportLandmarks[15][1]);
-        // Debug.Log("landmarkResult.viewportLandmarks[16][1]: " + landmarkResult.viewportLandmarks[16][1]);
-
-        //float DeltaLeftShoulder = ((StartingLeftShoulderY - landmarkResult.viewportLandmarks[11][1]) / (landmarkResult.viewportLandmarks[11][0] - landmarkResult.viewportLandmarks[23][0])) * 100;
         float DeltaLeftShoulder = Math.Abs(((StartingLeftShoulderY - landmarkResult.viewportLandmarks[11][1]) / (landmarkResult.viewportLandmarks[11][0] - landmarkResult.viewportLandmarks[23][0])) * 100);
-        Debug.Log("DeltaLeftShoulder: " + DeltaLeftShoulder);
 
         CheckPBLeftCount = (DeltaLeftShoulder > 5) ? (CheckPBLeftCount + 1) : (CheckPBLeftCount = 0);
 
@@ -706,10 +598,8 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
             StartingNeck = landmarkResult.viewportLandmarks[0][1];
         }
 
-        //float DeltaNeckDist = ((StartingNeck - landmarkResult.viewportLandmarks[0][1]) / (landmarkResult.viewportLandmarks[12][0] - landmarkResult.viewportLandmarks[24][0])) * 100;
         float DeltaNeckDist = Math.Abs(((StartingNeck - landmarkResult.viewportLandmarks[0][1]) / (landmarkResult.viewportLandmarks[12][0] - landmarkResult.viewportLandmarks[24][0])) * 100);
         Debug.Log("DeltaNeckDist" + DeltaNeckDist);
-        //Debug.Log("DeltaNeckDist" + DeltaNeckDist);
 
         CheckNeckPronatedCount = (DeltaNeckDist > 8) ? (CheckNeckPronatedCount + 1) : (CheckNeckPronatedCount = 0);
 
@@ -736,15 +626,11 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
             PronatedRight = false;
         }
 
-        Debug.Log("PronatedRight: "+PronatedRight);
-
         if (PronatedRight == true)
         {
             float d1 = landmarkResult.viewportLandmarks[12][0] - PrevShoulderLX;
             float d2 = landmarkResult.viewportLandmarks[24][0] - PrevHipLX;
             float d3 = landmarkResult.viewportLandmarks[14][0] - PrevElbowX;
-            //float d1y = landmarkResult.viewportLandmarks[12][1];
-            //float d2y = landmarkResult.viewportLandmarks[24][1];
 
             float delta = Math.Abs((d1 + d2) * 100);
             Debug.Log("delta" + delta);
@@ -759,9 +645,6 @@ public sealed class BlazePosePronatedSR : MonoBehaviour
                 StandStill.text = "Start exercise";
                 StandStill.gameObject.SetActive(true);
                 StillFrame = Frame;
-                //NormalizingFactor = ((d1y + d2y) / 2) - ((d3y + d4y) / 2);
-                //Debug.Log("NormalizingFactor" + NormalizingFactor);
-                //StillFrame = frame
             }
             else
             {

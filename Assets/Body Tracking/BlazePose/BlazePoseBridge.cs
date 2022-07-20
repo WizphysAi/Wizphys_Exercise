@@ -11,7 +11,6 @@ public sealed class BlazePoseBridge : MonoBehaviour
 {
     [SerializeField]
     private BlazePose.Options options = default;
-
     [SerializeField]
     private RectTransform containerView = null;
     [SerializeField]
@@ -26,7 +25,6 @@ public sealed class BlazePoseBridge : MonoBehaviour
     [SerializeField, Range(0f, 1f)]
     private float visibilityThreshold = 0.5f;
 
-
     private BlazePose pose;
     private PoseDetect.Result poseResult;
     private PoseLandmarkDetect.Result landmarkResult;
@@ -38,23 +36,12 @@ public sealed class BlazePoseBridge : MonoBehaviour
     [SerializeField] Text Raise_Up;
     [SerializeField] Text Counter;
 
-
     [Header("Audio Souce")]
     [SerializeField]
     AudioClip pronated_Audio;
 
     [SerializeField] AudioClip Counter_Audio;
     public AudioSource CounterAudio;
-
-    [Header("Error Object")]
-    [SerializeField]
-    AudioClip pronated_Object;
-    [SerializeField]
-    AudioClip neckUp_Object;
-    [SerializeField]
-    AudioClip pbLeft_Object;
-    [SerializeField]
-    AudioClip pbRight_Object;
 
     [Header("Exercise Start/Stop Signal")]
     [SerializeField] Image greenSignal;
@@ -73,7 +60,6 @@ public sealed class BlazePoseBridge : MonoBehaviour
     float PrevElbowX = 0;
     bool PronatedRight = false;
 
-
     //Check Movement Variables
     int MoveCount = 0;
     float PrevHipLY = 0;
@@ -86,10 +72,16 @@ public sealed class BlazePoseBridge : MonoBehaviour
     bool prevBridgeFlag = false;
     bool BridgeFlag = false;
 
+    //Slider
     public Slider slider;
     float sliderCount = 0;
     float sliderValue = 0;
 
+    //Gyro
+    [SerializeField] float gyrovalues_new;
+    [SerializeField] GameObject gyro;
+    private Gyro_Manager_Pronated GyroScript;
+    [SerializeField] GameObject gyroPanel;
 
     private UniTask<bool> task;
     private CancellationToken cancellationToken;
@@ -102,7 +94,7 @@ public sealed class BlazePoseBridge : MonoBehaviour
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
-
+        gyroPanel.gameObject.SetActive(false);
 
         if (SystemInfo.supportsGyroscope)
         {
@@ -116,8 +108,10 @@ public sealed class BlazePoseBridge : MonoBehaviour
         cancellationToken = this.GetCancellationTokenOnDestroy();
         CounterAudio.clip = Counter_Audio;
 
-        GetComponent<WebCamInput>().OnTextureUpdate.AddListener(OnTextureUpdate);
+        
 
+        GetComponent<WebCamInput>().OnTextureUpdate.AddListener(OnTextureUpdate);
+        GyroScript = gyro.GetComponent<Gyro_Manager_Pronated>();
         // Disable screen dimming
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
     }
@@ -151,45 +145,57 @@ public sealed class BlazePoseBridge : MonoBehaviour
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
+        gyroPanel.gameObject.SetActive(false);
 
-        if (landmarkResult != null && landmarkResult.score > 0.2f)
+        gyrovalues_new = GyroScript.gyrovalues_pronated*10;
+
+        //Debug.Log("gyrovalues_new: "+gyrovalues_new);
+        
+        if (16 > gyrovalues_new && gyrovalues_new > 14)
         {
-            //float TorsoSlope = (landmarkResult.viewportLandmarks[23][1] - landmarkResult.viewportLandmarks[11][1]) / (landmarkResult.viewportLandmarks[23][0] - landmarkResult.viewportLandmarks[11][0]);
-            //Debug.Log("TorsoSlope" + TorsoSlope*10);
-
-            if (StillFlag == true)
+            gyroPanel.gameObject.SetActive(false);
+            if (landmarkResult != null && landmarkResult.score > 0.2f)
             {
-                CheckMovementLeft();
-                
                 if (StillFlag == true)
                 {
+                    CheckMovementLeft();
+                    
+                    if (StillFlag == true)
+                    {
 
-                    greenSignal.gameObject.SetActive(true);
-                    redSignal.gameObject.SetActive(false);
+                        greenSignal.gameObject.SetActive(true);
+                        redSignal.gameObject.SetActive(false);
 
-                    CheckBridge();
+                        CheckBridge();
+                    }
                 }
+                else
+                {
+                    Exercise.gameObject.SetActive(false);
+                    Raise_Up.gameObject.SetActive(false);
+
+                    greenSignal.gameObject.SetActive(false);
+                    redSignal.gameObject.SetActive(true);
+
+                    CheckStillPronated();
+                }
+
+                drawer.DrawLandmarkResult(landmarkResult, visibilityThreshold, canvas.planeDistance);
+
+                Frame = Frame + 1;
             }
             else
             {
-                Exercise.gameObject.SetActive(false);
-                Raise_Up.gameObject.SetActive(false);
-
-                greenSignal.gameObject.SetActive(false);
-                redSignal.gameObject.SetActive(true);
-
-                CheckStillPronated();
+                StillFlag = false;
+                StandStill.text = "Please stand in the frame";
+                StandStill.gameObject.SetActive(true);
             }
-
-            drawer.DrawLandmarkResult(landmarkResult, visibilityThreshold, canvas.planeDistance);
-
-            Frame = Frame + 1;
         }
-        else
-        {
+        else{
+            gyroPanel.gameObject.SetActive(true);
             StillFlag = false;
-            StandStill.text = "Please stand in the frame";
-            StandStill.gameObject.SetActive(true);
+            greenSignal.gameObject.SetActive(false);
+            redSignal.gameObject.SetActive(true);
         }
 
         //Main Audio Player
