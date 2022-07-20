@@ -230,7 +230,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1779110686}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -291,7 +291,7 @@ GameObject:
   - component: {fileID: 48632787}
   - component: {fileID: 48632786}
   m_Layer: 5
-  m_Name: Shrugging
+  m_Name: Wrist
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -309,7 +309,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1779110686}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -349,7 +349,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Shrugging
+  m_Text: Wrist
 --- !u!222 &48632787
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1124,7 +1124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 414638869}
+  m_Material: {fileID: 1348339905}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1697,40 +1697,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 401066618}
   m_CullTransparentMesh: 1
---- !u!21 &414638869
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/RoundedCorners/RoundedCorners
-  m_Shader: {fileID: 4800000, guid: 0bd2ec5d73751e34a814274a454bec41, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - _ColorMask: 15
-    - _Stencil: 0
-    - _StencilComp: 8
-    - _StencilOp: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    - _UseUIAlphaClip: 0
-    m_Colors:
-    - _WidthHeightRadius: {r: 800, g: 379.4763, b: 100, a: 0}
-  m_BuildTextureStacks: []
 --- !u!1 &438568657
 GameObject:
   m_ObjectHideFlags: 0
@@ -4862,11 +4828,6 @@ MonoBehaviour:
   NeckRotaionObject: {fileID: 438568657}
   r_shoulderShrugging: {fileID: 937451017}
   l_shoulderShrugging: {fileID: 164474691}
-  startExercise_ls_Object: {fileID: 8300000, guid: 2b39e608c317d524a8e6e234fe7cc21e,
-    type: 3}
-  TorsoTilt_Object: {fileID: 8300000, guid: ccb9619e67353304b9fa7625fa6c747e, type: 3}
-  ElbowBend_Object: {fileID: 8300000, guid: 4370284c17ebab3408238cec9f1b6f61, type: 3}
-  SideBend_Object: {fileID: 8300000, guid: d67b1b379eb769648a0020d89687487c, type: 3}
   greenSignal: {fileID: 257454222}
   redSignal: {fileID: 931929113}
   slider: {fileID: 0}
@@ -5094,6 +5055,40 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1294094818}
   m_CullTransparentMesh: 1
+--- !u!21 &1348339905
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI/RoundedCorners/RoundedCorners
+  m_Shader: {fileID: 4800000, guid: 0bd2ec5d73751e34a814274a454bec41, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _ColorMask: 15
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _UseUIAlphaClip: 0
+    m_Colors:
+    - _WidthHeightRadius: {r: 800, g: 379.4763, b: 100, a: 0}
+  m_BuildTextureStacks: []
 --- !u!1 &1356687223
 GameObject:
   m_ObjectHideFlags: 0
@@ -5337,7 +5332,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1779110686}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -6017,6 +6012,7 @@ MonoBehaviour:
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
   gyrovalues: 0
+  gyrovalues_pronated: 0
 --- !u!4 &1675820228
 Transform:
   m_ObjectHideFlags: 0
@@ -6112,85 +6108,6 @@ RectTransform:
   m_AnchoredPosition: {x: -5, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1719727469
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1719727470}
-  - component: {fileID: 1719727472}
-  - component: {fileID: 1719727471}
-  m_Layer: 5
-  m_Name: NeckRotation
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1719727470
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1719727469}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1779110686}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1719727471
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1719727469}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 12800000, guid: 7f8dd9d744af3e843bf2984414c6274a, type: 3}
-    m_FontSize: 14
-    m_FontStyle: 2
-    m_BestFit: 1
-    m_MinSize: 10
-    m_MaxSize: 100
-    m_Alignment: 4
-    m_AlignByGeometry: 1
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: Neck Rotation
---- !u!222 &1719727472
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1719727469}
-  m_CullTransparentMesh: 1
 --- !u!1 &1755417855
 GameObject:
   m_ObjectHideFlags: 0
@@ -6251,9 +6168,8 @@ MonoBehaviour:
   standStill: {fileID: 401066620}
   startExercise: {fileID: 643849369}
   Bracing: {fileID: 45637320}
-  NeckTilt: {fileID: 2102284989}
-  NeckRotaion: {fileID: 1719727471}
-  Shrugging: {fileID: 48632786}
+  LowRow: {fileID: 2102284989}
+  Wrist: {fileID: 48632786}
   BackBend: {fileID: 1423815874}
   Counter: {fileID: 979664151}
   Bracing_Audio: {fileID: 8300000, guid: e7e6fefa37e713148b40cd28c42d272f, type: 3}
@@ -6266,10 +6182,6 @@ MonoBehaviour:
   NeckTiltAudio: {fileID: 1755417860}
   NeckRotationAudio: {fileID: 1755417860}
   CounterAudio: {fileID: 1755417860}
-  necktiltObject: {fileID: 0}
-  NeckRotaionObject: {fileID: 0}
-  r_shoulderShrugging: {fileID: 0}
-  l_shoulderShrugging: {fileID: 0}
   greenSignal: {fileID: 257454222}
   redSignal: {fileID: 931929113}
   slider: {fileID: 709443169}
@@ -6742,10 +6654,9 @@ RectTransform:
   - {fileID: 873279354}
   - {fileID: 401066619}
   - {fileID: 643849368}
+  - {fileID: 45637319}
   - {fileID: 2102284988}
   - {fileID: 48632785}
-  - {fileID: 45637319}
-  - {fileID: 1719727470}
   - {fileID: 1423815873}
   m_Father: {fileID: 868495066}
   m_RootOrder: 0
@@ -7847,7 +7758,7 @@ GameObject:
   - component: {fileID: 2102284990}
   - component: {fileID: 2102284989}
   m_Layer: 5
-  m_Name: NeckTilt
+  m_Name: LowRow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7865,7 +7776,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1779110686}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -7905,7 +7816,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Neck Tilt
+  m_Text: LowRow
 --- !u!222 &2102284990
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -34,10 +34,10 @@ public sealed class BlazePoseWallPush : MonoBehaviour
     [SerializeField] Text standStill;
     [SerializeField] Text startExercise;
     [SerializeField] Text Bracing;
-    [SerializeField] Text NeckTilt;
-    [SerializeField] Text NeckRotaion;
-    [SerializeField] Text Shrugging;
+    [SerializeField] Text WallPush;
+    [SerializeField] Text Wrist;
     [SerializeField] Text BackBend;
+    [SerializeField] Text AwayFromWall;
     [SerializeField] Text Counter;
 
     [Header("Audio Souce")]
@@ -78,11 +78,14 @@ public sealed class BlazePoseWallPush : MonoBehaviour
     int CheckBracingCount = 0;
     float StartingShoulderDist;
 
-    //LowRow Variable
-    int LowRowAngleCount = 0;
-    bool LowRowFlag = false;
-    bool PrevLowRowFlag = false;
-    int LowRowCounter = 0;
+    //WallPush Variable
+    int WallPushAngleCount = 0;
+    bool WallPushFlag = false;
+    bool PrevWallPushFlag = false;
+    int WallPushCounter = 0;
+
+    //AwayFromWall
+    int AwayFromWallCount = 0;
 
     //Audio
     bool ShruggingFlag = false;
@@ -137,19 +140,20 @@ public sealed class BlazePoseWallPush : MonoBehaviour
 
     private void Start()
     {
+
         slider.value = 0;
         loadingAnim.gameObject.SetActive(false);
         startExercise.gameObject.SetActive(false);
+
         Bracing.gameObject.SetActive(false);
-        NeckTilt.gameObject.SetActive(false);
-        NeckRotaion.gameObject.SetActive(false);
-        Shrugging.gameObject.SetActive(false);
+        WallPush.gameObject.SetActive(false);
+        Wrist.gameObject.SetActive(false);
         BackBend.gameObject.SetActive(false);
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
-        
         gyroPanel.gameObject.SetActive(false);
+        AwayFromWall.gameObject.SetActive(false);
 
         //source.PlayOneShot(bracingstart_Audio, 1f);
 
@@ -200,16 +204,16 @@ public sealed class BlazePoseWallPush : MonoBehaviour
     {
         startExercise.gameObject.SetActive(false);
         Bracing.gameObject.SetActive(false);
-        NeckTilt.gameObject.SetActive(false);
+        WallPush.gameObject.SetActive(false);
+        Wrist.gameObject.SetActive(false);
         BackBend.gameObject.SetActive(false);
-        //necktiltObject.gameObject.SetActive(false);
-        Shrugging.gameObject.SetActive(false);
+        AwayFromWall.gameObject.SetActive(false);
 
         greenSignal.gameObject.SetActive(false);
         redSignal.gameObject.SetActive(true);
 
         gyrovalues_new = GyroScript.gyrovalues*10;
-        //gyrovalues_new = 2f;
+        gyrovalues_new = 2f;
 
         if (3 > gyrovalues_new && gyrovalues_new > 1.8)
         {
@@ -220,8 +224,8 @@ public sealed class BlazePoseWallPush : MonoBehaviour
                 float t1 = (landmarkResult.viewportLandmarks[32][0] - landmarkResult.viewportLandmarks[28][0]);
                 float t2 = (landmarkResult.viewportLandmarks[31][0] - landmarkResult.viewportLandmarks[27][0]);
 
-                Debug.Log("t1:"+t1);
-                Debug.Log("t2:"+t2);
+                // Debug.Log("t1:"+t1);
+                // Debug.Log("t2:"+t2);
 
                 if (StillFlag == true)
                 {
@@ -246,19 +250,19 @@ public sealed class BlazePoseWallPush : MonoBehaviour
                                 CheckAngleLeft();
                             }
                         }else{
-                            CheckBracing();
+                            // CheckBracing();
                             
                             if(t1<0 && t2<0){
-                                CheckLowRowRight();
+                                CheckWallPushRight();
                                 // CheckBackBendRight();
-                                if(LowRowFlag == false){
+                                if(WallPushFlag == true){
                                     CheckWristRight();
                                 }
                             }
                             else if(t1>0 && t2>0){
-                                CheckLowRowLeft();
+                                CheckWallPushLeft();
                                 // CheckBackBendLeft();
-                                if(LowRowFlag == false){
+                                if(WallPushFlag == true){
                                     CheckWristLeft();
                                 }
                             }
@@ -271,10 +275,11 @@ public sealed class BlazePoseWallPush : MonoBehaviour
 
                         startExercise.gameObject.SetActive(false);
                         Bracing.gameObject.SetActive(false);
-                        NeckTilt.gameObject.SetActive(false);           
+                        WallPush.gameObject.SetActive(false);
+                        Wrist.gameObject.SetActive(false);
                         BackBend.gameObject.SetActive(false);
-                        //necktiltObject.gameObject.SetActive(false);
-                        Shrugging.gameObject.SetActive(false);
+                        AwayFromWall.gameObject.SetActive(false);
+
                         if(t1<0 && t2<0){
                             CheckStandStillRight();
                         }
@@ -290,9 +295,11 @@ public sealed class BlazePoseWallPush : MonoBehaviour
 
                     startExercise.gameObject.SetActive(false);
                     Bracing.gameObject.SetActive(false);
-                    NeckTilt.gameObject.SetActive(false);
-                    //necktiltObject.gameObject.SetActive(false);
-                    Shrugging.gameObject.SetActive(false);
+                    WallPush.gameObject.SetActive(false);
+                    Wrist.gameObject.SetActive(false);
+                    BackBend.gameObject.SetActive(false);
+                    AwayFromWall.gameObject.SetActive(false);
+
                     if(t1<0 && t2<0){
                         CheckStandStillRight();
                     }
@@ -369,7 +376,7 @@ public sealed class BlazePoseWallPush : MonoBehaviour
                                 if(ShruggingCounter < 3)  //counter+1
                                 {
                                     ShruggingAudio.Play();
-                                    Shrugging.gameObject.SetActive(true);
+                                    // Shrugging.gameObject.SetActive(true);
                                 }
 
                                 if (ShruggingAudio.isPlaying) //lower master audio sound
@@ -387,7 +394,7 @@ public sealed class BlazePoseWallPush : MonoBehaviour
                                 if (NeckTiltCounter < 3)  //counter+1
                                 {
                                     NeckTiltAudio.Play();
-                                    NeckTilt.gameObject.SetActive(true);
+                                    // NeckTilt.gameObject.SetActive(true);
                                     //necktiltObject.gameObject.SetActive(true);
                                 }
                                 if (NeckTiltAudio.isPlaying) //lower master audio sound
@@ -405,7 +412,7 @@ public sealed class BlazePoseWallPush : MonoBehaviour
                                 if (NeckRotationCounter < 3)  //counter+1
                                 {
                                     NeckRotationAudio.Play();
-                                    NeckRotaion.gameObject.SetActive(true);
+                                    // NeckRotaion.gameObject.SetActive(true);
                                     // NeckRotaionObject.gameObject.SetActive(true);
                                 }
                                 if (NeckRotationAudio.isPlaying) //lower master audio sound
@@ -688,44 +695,53 @@ public sealed class BlazePoseWallPush : MonoBehaviour
         return 1;
     }
 
-    private float CheckLowRowLeft()
+    private float CheckWallPushLeft()
     {
         var A = landmarkResult.viewportLandmarks[11];
         var B = landmarkResult.viewportLandmarks[13];
         var C = landmarkResult.viewportLandmarks[15];
 
-        float LowRowAngle = Vector2.Angle(A - B, C - B);
-        Debug.Log("LowRowAngle: " + LowRowAngle);
+        float WallPushAngle = Vector2.Angle(A - B, C - B);
+        //Debug.Log("WallPushAngle: " + WallPushAngle);
         float deltaElbowHip = (Math.Abs(landmarkResult.viewportLandmarks[25][0] - landmarkResult.viewportLandmarks[13][0])/NormalizingFactor)*100;
         Debug.Log("deltaElbowHip: " + deltaElbowHip);
-        // Debug.Log("deltaLowRowAngle: " + deltaLowRowAngle);
 
-        LowRowAngleCount = (LowRowAngle < 70.0f && deltaElbowHip > 30.0f) ? (LowRowAngleCount + 1) : LowRowAngleCount = 0;
+        WallPushAngleCount = (WallPushAngle < 70.0f && deltaElbowHip > 30.0f) ? (WallPushAngleCount + 1) : WallPushAngleCount = 0;
+        AwayFromWallCount = (deltaElbowHip > 75.0f) ? (AwayFromWallCount + 1) : AwayFromWallCount = 0;
 
-        if (LowRowAngleCount > 20)
+        if (WallPushAngleCount > 20)
         {
-            LowRowFlag = true;
-            Bracing.text = "Low Row";
-            Bracing.gameObject.SetActive(true);
+            WallPushFlag = true;
+            WallPush.text = "Wall Push";
+            WallPush.gameObject.SetActive(true);
             sliderCount = sliderCount+1f;
         }
         else
         {
-            LowRowFlag = false;
-            Bracing.gameObject.SetActive(false);
+            WallPushFlag = false;
+            WallPush.gameObject.SetActive(false);
         }
 
-        if (PrevLowRowFlag != LowRowFlag)
+        if (AwayFromWallCount > 15){
+            AwayFromWall.text = "Away From Wall";
+            AwayFromWall.gameObject.SetActive(true);
+        }
+        else
         {
-            LowRowCounter += 1;
-            sliderCount = 0;
-            Counter.text = (LowRowCounter / 2).ToString();
+            AwayFromWall.gameObject.SetActive(false);
+        }
 
-            if (LowRowCounter > 0 && (LowRowCounter % 2 == 0)) {
+        if (PrevWallPushFlag != WallPushFlag)
+        {
+            WallPushCounter += 1;
+            sliderCount = 0;
+            Counter.text = (WallPushCounter / 2).ToString();
+
+            if (WallPushCounter > 0 && (WallPushCounter % 2 == 0)) {
                 CounterAudio.Play();
             }
 
-            if (LowRowCounter == 20)
+            if (WallPushCounter == 20)
             {
                 loadingAnim.gameObject.SetActive(true);
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
@@ -735,48 +751,58 @@ public sealed class BlazePoseWallPush : MonoBehaviour
         sliderValue = (float)(sliderCount/70f);
         slider.value = sliderValue; 
 
-        PrevLowRowFlag = LowRowFlag;
-        return LowRowAngle;
+        PrevWallPushFlag = WallPushFlag;
+        return WallPushAngle;
     }
 
-    private float CheckLowRowRight()
+    private float CheckWallPushRight()
     {
         var A = landmarkResult.viewportLandmarks[12];
         var B = landmarkResult.viewportLandmarks[14];
         var C = landmarkResult.viewportLandmarks[16];
 
-        float LowRowAngle = Vector2.Angle(A - B, C - B);
-        Debug.Log("LowRowAngle: " + LowRowAngle);
+        float WallPushAngle = Vector2.Angle(A - B, C - B);
+        //Debug.Log("WallPushAngle: " + WallPushAngle);
         float deltaElbowHip = (Math.Abs(landmarkResult.viewportLandmarks[26][0] - landmarkResult.viewportLandmarks[14][0])/NormalizingFactor)*100;
         Debug.Log("deltaElbowHip: " + deltaElbowHip);
-        // Debug.Log("deltaLowRowAngle: " + deltaLowRowAngle);
+        // Debug.Log("deltaWallPushAngle: " + deltaWallPushAngle);
 
-        LowRowAngleCount = (LowRowAngle < 70.0f && deltaElbowHip > 30.0f) ? (LowRowAngleCount + 1) : LowRowAngleCount = 0;
+        WallPushAngleCount = (WallPushAngle < 70.0f && deltaElbowHip > 30.0f) ? (WallPushAngleCount + 1) : WallPushAngleCount = 0;
+        AwayFromWallCount = (deltaElbowHip > 75.0f) ? (AwayFromWallCount + 1) : AwayFromWallCount = 0;
 
-        if (LowRowAngleCount > 20)
+        if (WallPushAngleCount > 20)
         {
-            LowRowFlag = true;
-            Bracing.text = "Low Row";
-            Bracing.gameObject.SetActive(true);
+            WallPushFlag = true;
+            WallPush.text = "Wall Push";
+            WallPush.gameObject.SetActive(true);
             sliderCount = sliderCount+1f;
         }
         else
         {
-            LowRowFlag = false;
-            Bracing.gameObject.SetActive(false);
+            WallPushFlag = false;
+            WallPush.gameObject.SetActive(false);
         }
 
-        if (PrevLowRowFlag != LowRowFlag)
+        if (AwayFromWallCount > 15){
+            AwayFromWall.text = "Away From Wall";
+            AwayFromWall.gameObject.SetActive(true);
+        }
+        else
         {
-            LowRowCounter += 1;
-            sliderCount = 0;
-            Counter.text = (LowRowCounter / 2).ToString();
+            AwayFromWall.gameObject.SetActive(false);
+        }
 
-            if (LowRowCounter > 0 && (LowRowCounter % 2 == 0)) {
+        if (PrevWallPushFlag != WallPushFlag)
+        {
+            WallPushCounter += 1;
+            sliderCount = 0;
+            Counter.text = (WallPushCounter / 2).ToString();
+
+            if (WallPushCounter > 0 && (WallPushCounter % 2 == 0)) {
                 CounterAudio.Play();
             }
 
-            if (LowRowCounter == 20)
+            if (WallPushCounter == 20)
             {
                 loadingAnim.gameObject.SetActive(true);
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
@@ -786,8 +812,8 @@ public sealed class BlazePoseWallPush : MonoBehaviour
         sliderValue = (float)(sliderCount/70f);
         slider.value = sliderValue; 
 
-        PrevLowRowFlag = LowRowFlag;
-        return LowRowAngle;
+        PrevWallPushFlag = WallPushFlag;
+        return WallPushAngle;
     }
 
     private float CheckBracing()
@@ -801,18 +827,19 @@ public sealed class BlazePoseWallPush : MonoBehaviour
         float DeltaShoulderDist = ((ShoulderDist - StartingShoulderDist)/NormalizingFactor)*100;
         // Debug.Log("ShoulderDist: "+ShoulderDist);
         // Debug.Log("StartingShoulderDist: "+StartingShoulderDist);
-        Debug.Log("DeltaShoulderDist: "+ DeltaShoulderDist);
+
+        //Debug.Log("DeltaShoulderDist: "+ DeltaShoulderDist);
 
         CheckBracingCount = (DeltaShoulderDist > 6.250f) ? (CheckBracingCount + 1) : (CheckBracingCount = 0);
 
         if (CheckBracingCount > 10)
         {
-            NeckRotaion.text = "Bracing";
-            NeckRotaion.gameObject.SetActive(true);
+            Bracing.text = "Bracing";
+            Bracing.gameObject.SetActive(true);
         }
         else
         {
-            NeckRotaion.gameObject.SetActive(false);
+            Bracing.gameObject.SetActive(false);
         }
 
         return DeltaShoulderDist;
@@ -829,7 +856,7 @@ public sealed class BlazePoseWallPush : MonoBehaviour
 
         float DeltaTorsoSlopeRight = (StartingtorsoslopeRight - torsoslopeRight);
 
-        Debug.Log("DeltaTorsoSlopeRight: "+ DeltaTorsoSlopeRight);
+        //Debug.Log("DeltaTorsoSlopeRight: "+ DeltaTorsoSlopeRight);
         // Debug.Log("torsoslopeRight1: "+ torsoslopeRight1);
 
         BackBendCount = (torsoslopeRight > 3.5f) ? (BackBendCount + 1) : (BackBendCount = 0);
@@ -856,7 +883,7 @@ public sealed class BlazePoseWallPush : MonoBehaviour
 
         float DeltaTorsoSlopeLeft = (StartingtorsoslopeLeft - torsoslopeLeft);
 
-        Debug.Log("DeltaTorsoSlopeLeft: "+ DeltaTorsoSlopeLeft);
+        //Debug.Log("DeltaTorsoSlopeLeft: "+ DeltaTorsoSlopeLeft);
 
         BackBendCount = (torsoslopeLeft < -4.5f) ? (BackBendCount + 1) : (BackBendCount = 0);
 
@@ -877,22 +904,24 @@ public sealed class BlazePoseWallPush : MonoBehaviour
     {
         float WrsitElbowDistY = ((landmarkResult.viewportLandmarks[16][1] - landmarkResult.viewportLandmarks[14][1])/NormalizingFactor)*100;
 
+        Debug.Log("WrsitElbowDistY: "+WrsitElbowDistY);
+
         WrsitUpCount = (WrsitElbowDistY > 0.0f) ? (WrsitUpCount + 1) : (WrsitUpCount = 0);
         WrsitDownCount = (WrsitElbowDistY < -17.5f) ? (WrsitDownCount + 1) : (WrsitDownCount = 0);
 
         if (WrsitUpCount > 30)
         {
-            Shrugging.text = "Wrsit Up";
-            Shrugging.gameObject.SetActive(true);
+            Wrist.text = "Wrsit Up";
+            Wrist.gameObject.SetActive(true);
         }
         else if (WrsitDownCount > 35)
         {
-            Shrugging.text = "Wrsit Down";
-            Shrugging.gameObject.SetActive(true);
+            Wrist.text = "Wrsit Down";
+            Wrist.gameObject.SetActive(true);
         }
         else
         {
-            Shrugging.gameObject.SetActive(false);
+            Wrist.gameObject.SetActive(false);
         }
 
         return WrsitElbowDistY;
@@ -902,22 +931,24 @@ public sealed class BlazePoseWallPush : MonoBehaviour
     {
         float WrsitElbowDistY = ((landmarkResult.viewportLandmarks[15][1] - landmarkResult.viewportLandmarks[13][1])/NormalizingFactor)*100;
 
+        Debug.Log("WrsitElbowDistY: "+WrsitElbowDistY);
+
         WrsitUpCount = (WrsitElbowDistY > 0.0f) ? (WrsitUpCount + 1) : (WrsitUpCount = 0);
         WrsitDownCount = (WrsitElbowDistY < -17.5f) ? (WrsitDownCount + 1) : (WrsitDownCount = 0);
 
         if (WrsitUpCount > 30)
         {
-            Shrugging.text = "Wrsit Up";
-            Shrugging.gameObject.SetActive(true);
+            Wrist.text = "Wrsit Up";
+            Wrist.gameObject.SetActive(true);
         }
         else if (WrsitDownCount > 35)
         {
-            Shrugging.text = "Wrsit Down";
-            Shrugging.gameObject.SetActive(true);
+            Wrist.text = "Wrsit Down";
+            Wrist.gameObject.SetActive(true);
         }
         else
         {
-            Shrugging.gameObject.SetActive(false);
+            Wrist.gameObject.SetActive(false);
         }
 
         return WrsitElbowDistY;
